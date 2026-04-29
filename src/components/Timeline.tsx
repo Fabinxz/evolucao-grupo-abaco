@@ -22,7 +22,7 @@ interface TimelineEvent {
   image: string;
 }
 
-  const TIMELINE_DATA: TimelineEvent[] = [
+const TIMELINE_DATA: TimelineEvent[] = [
   {
     id: 1,
     year: "2700 a.C.",
@@ -105,16 +105,15 @@ interface CardProps {
 
 function TimelineCard({ event, index }: CardProps) {
   const ref = useRef<HTMLDivElement>(null);
-  const isInView = useInView(ref, { once: false, amount: 0.3 });
+  const isInView = useInView(ref, { once: false, amount: 0.25 });
   const isLeft = index % 2 === 0;
 
   return (
     <div
       ref={ref}
       className="relative flex items-center w-full"
-      style={{ justifyContent: "flex-start" }}
     >
-      {/* ── NODE DOT (Desktop) ── */}
+      {/* ── NODE DOT (Desktop only) ── */}
       <div
         className={`
           hidden md:block absolute z-10
@@ -128,32 +127,36 @@ function TimelineCard({ event, index }: CardProps) {
         `}
       />
 
-      {/* ── NODE DOT (Mobile) ── */}
+      {/* ── NODE DOT (Mobile only) ── */}
       <div
         className={`
-          md:hidden absolute left-6 -ml-[5px] z-10
-          w-3 h-3 rounded-full border
+          md:hidden absolute z-10
+          w-2.5 h-2.5 rounded-full border
           transition-all duration-500
           ${isInView
-            ? "bg-[#00F5FF] border-[#00F5FF] shadow-[0_0_8px_rgba(0,245,255,0.6),0_0_20px_rgba(0,245,255,0.3)]"
+            ? "bg-[#00F5FF] border-[#00F5FF] shadow-[0_0_6px_rgba(0,245,255,0.6),0_0_14px_rgba(0,245,255,0.3)]"
             : "bg-gray-800 border-gray-600"
           }
         `}
+        style={{ left: "11px", top: "50%", transform: "translateY(-50%)" }}
       />
 
       {/* ── CARD ── */}
       <motion.div
-        initial={{ opacity: 0, y: 50, scale: 0.96 }}
+        initial={{ opacity: 0, y: 40, scale: 0.97 }}
         whileInView={{ opacity: 1, y: 0, scale: 1 }}
-        viewport={{ once: false, amount: 0.2 }}
+        viewport={{ once: false, amount: 0.15 }}
         transition={cardSpring}
-        className={`relative w-[calc(100%-4.5rem)] ml-[4.5rem] md:w-[calc(50%-40px)] md:ml-0 ${
-          isLeft ? "md:mr-auto" : "md:ml-auto"
-        }`}
+        className={`
+          relative
+          w-[calc(100%-2.5rem)] ml-[2.5rem]
+          md:w-[calc(50%-40px)] md:ml-0
+          ${isLeft ? "md:mr-auto" : "md:ml-auto"}
+        `}
       >
         <div
           className={`
-            timeline-card-wrap relative rounded-xl overflow-hidden
+            relative rounded-lg overflow-hidden
             backdrop-blur-md
             border transition-all duration-700
             ${isInView ? "border-[#00F5FF]/30" : "border-gray-800"}
@@ -169,14 +172,14 @@ function TimelineCard({ event, index }: CardProps) {
           }}
         >
           {/* ── IMAGE CONTAINER ── */}
-          <div className="relative w-full h-48 overflow-hidden">
+          <div className="relative w-full aspect-[16/10] overflow-hidden">
             <img
               src={event.image}
               alt={event.title}
               className="object-cover w-full h-full"
               loading="lazy"
             />
-            {/* Gradient overlay for seamless text transition */}
+            {/* Gradient overlay */}
             <div
               className="absolute inset-0"
               style={{
@@ -185,12 +188,12 @@ function TimelineCard({ event, index }: CardProps) {
             />
             {/* Year badge on image */}
             <div
-              className="absolute bottom-3 left-4"
+              className="absolute bottom-2 left-3 sm:bottom-3 sm:left-4"
               style={{ fontFamily: "'JetBrains Mono', monospace" }}
             >
               <span
                 className={`
-                  text-xl md:text-2xl font-bold tracking-wide
+                  text-lg sm:text-xl md:text-2xl font-bold tracking-wide
                   transition-all duration-500
                   ${isInView ? "text-[#00F5FF]" : "text-gray-400"}
                 `}
@@ -202,7 +205,7 @@ function TimelineCard({ event, index }: CardProps) {
               >
                 {event.year}
               </span>
-              <span className="ml-3 text-[10px] text-gray-400 tracking-widest uppercase">
+              <span className="ml-2 sm:ml-3 text-[8px] sm:text-[10px] text-gray-400 tracking-widest uppercase">
                 {event.era}
               </span>
             </div>
@@ -225,21 +228,21 @@ function TimelineCard({ event, index }: CardProps) {
           <div
             className="md:hidden absolute top-1/2 -translate-y-1/2 h-px"
             style={{
-              width: "3rem",
-              left: "-3rem",
+              width: "2rem",
+              left: "-2rem",
               background: isInView ? "rgba(0,245,255,0.3)" : "rgba(31,41,55,0.5)",
               transition: "background 0.7s ease",
             }}
           />
 
           {/* ── TEXT CONTENT ── */}
-          <div className="p-5 pt-3">
+          <div className="p-3 pt-2 sm:p-5 sm:pt-3">
             {/* TAG */}
             {event.tag && (
               <span
                 className={`
-                  inline-block text-[10px] tracking-widest uppercase
-                  px-2 py-0.5 rounded mb-3
+                  inline-block text-[9px] sm:text-[10px] tracking-widest uppercase
+                  px-2 py-0.5 rounded mb-2 sm:mb-3
                   transition-colors duration-500
                   ${isInView
                     ? "text-[#00F5FF] bg-[#00F5FF]/10 border border-[#00F5FF]/20"
@@ -253,13 +256,13 @@ function TimelineCard({ event, index }: CardProps) {
             )}
 
             {/* TITLE */}
-            <h4 className="text-base md:text-lg font-semibold text-white/90 mb-2 tracking-tight">
+            <h4 className="text-sm sm:text-base md:text-lg font-semibold text-white/90 mb-1 sm:mb-2 tracking-tight">
               {event.title}
             </h4>
 
             {/* DESCRIPTION */}
             <p
-              className="text-sm leading-relaxed"
+              className="text-xs sm:text-sm leading-relaxed"
               style={{
                 fontFamily: "'Inter', sans-serif",
                 color: "rgba(224, 224, 224, 0.8)",
@@ -305,26 +308,40 @@ export default function Timeline() {
   return (
     <section
       ref={containerRef}
-      className="relative w-full min-h-screen px-4 md:px-8 py-16 md:py-24"
+      className="relative w-full min-h-screen px-3 sm:px-4 md:px-8 py-10 sm:py-16 md:py-24"
     >
       {/* ════════ TIMELINE SPINE ════════ */}
       <div className="relative max-w-4xl mx-auto">
-        {/* CENTRAL LINE */}
+        {/* CENTRAL LINE — Mobile: left-aligned, Desktop: centered */}
         <div
-          className="absolute top-0 bottom-0 timeline-line bg-gray-800 w-[2px] left-6 md:left-1/2 md:-translate-x-1/2"
+          className="absolute top-0 bottom-0 timeline-line bg-gray-800 w-[2px]"
+          style={{ left: "12px" }}
+        />
+        {/* Desktop override via CSS */}
+        <style>{`
+          @media (min-width: 768px) {
+            .timeline-line-main { left: 50% !important; transform: translateX(-50%); }
+            .timeline-dot-main { left: 50% !important; transform: translateX(-50%) !important; margin-left: 0 !important; }
+          }
+        `}</style>
+        <div
+          className="absolute top-0 bottom-0 timeline-line timeline-line-main bg-gray-800 w-[2px]"
+          style={{ left: "12px" }}
         />
 
         {/* SCROLL-TRACKING GLOW DOT */}
         <motion.div
-          className="absolute z-20 neon-dot w-3.5 h-3.5 rounded-full left-6 -ml-[6px] md:left-1/2 md:ml-0 md:-translate-x-1/2"
+          className="absolute z-20 neon-dot w-3 h-3 sm:w-3.5 sm:h-3.5 rounded-full timeline-dot-main"
           style={{
             top: dotTop,
+            left: "12px",
+            transform: "translateX(-50%)",
             background: "#00F5FF",
           }}
         />
 
         {/* ════════ EVENTS ════════ */}
-        <div className="relative flex flex-col gap-14 md:gap-20">
+        <div className="relative flex flex-col gap-8 sm:gap-14 md:gap-20">
           {TIMELINE_DATA.map((event, index) => (
             <TimelineCard key={event.id} event={event} index={index} />
           ))}
