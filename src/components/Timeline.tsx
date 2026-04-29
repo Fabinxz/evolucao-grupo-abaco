@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useEffect, useState } from "react";
+import { useRef } from "react";
 import {
   motion,
   useScroll,
@@ -131,7 +131,7 @@ function TimelineCard({ event, index }: CardProps) {
       {/* ── NODE DOT (Mobile) ── */}
       <div
         className={`
-          md:hidden absolute left-[18px] z-10
+          md:hidden absolute left-6 -ml-[5px] z-10
           w-3 h-3 rounded-full border
           transition-all duration-500
           ${isInView
@@ -147,22 +147,10 @@ function TimelineCard({ event, index }: CardProps) {
         whileInView={{ opacity: 1, y: 0, scale: 1 }}
         viewport={{ once: false, amount: 0.2 }}
         transition={cardSpring}
-        className="relative w-full ml-10 md:ml-0"
-        style={{
-          width: "calc(50% - 40px)",
-          ...(isLeft
-            ? { marginRight: "auto", marginLeft: undefined }
-            : { marginLeft: "auto", marginRight: undefined }
-          ),
-        }}
+        className={`relative w-[calc(100%-4.5rem)] ml-[4.5rem] md:w-[calc(50%-40px)] md:ml-0 ${
+          isLeft ? "md:mr-auto" : "md:ml-auto"
+        }`}
       >
-        {/* Mobile override */}
-        <style>{`
-          @media (max-width: 767px) {
-            .timeline-card-wrap { width: 100% !important; margin-left: 2.5rem !important; margin-right: 0 !important; }
-          }
-        `}</style>
-
         <div
           className={`
             timeline-card-wrap relative rounded-xl overflow-hidden
@@ -237,8 +225,8 @@ function TimelineCard({ event, index }: CardProps) {
           <div
             className="md:hidden absolute top-1/2 -translate-y-1/2 h-px"
             style={{
-              width: "22px",
-              left: "-22px",
+              width: "3rem",
+              left: "-3rem",
               background: isInView ? "rgba(0,245,255,0.3)" : "rgba(31,41,55,0.5)",
               transition: "background 0.7s ease",
             }}
@@ -314,14 +302,6 @@ export default function Timeline() {
 
   const dotTop = useTransform(smoothProgress, [0, 1], ["2%", "98%"]);
 
-  const [isMobile, setIsMobile] = useState(false);
-  useEffect(() => {
-    const check = () => setIsMobile(window.innerWidth < 768);
-    check();
-    window.addEventListener("resize", check);
-    return () => window.removeEventListener("resize", check);
-  }, []);
-
   return (
     <section
       ref={containerRef}
@@ -331,21 +311,14 @@ export default function Timeline() {
       <div className="relative max-w-4xl mx-auto">
         {/* CENTRAL LINE */}
         <div
-          className="absolute top-0 bottom-0 timeline-line"
-          style={{
-            left: isMobile ? "18px" : "50%",
-            transform: isMobile ? "none" : "translateX(-50%)",
-            width: "2px",
-          }}
+          className="absolute top-0 bottom-0 timeline-line bg-gray-800 w-[2px] left-6 md:left-1/2 md:-translate-x-1/2"
         />
 
         {/* SCROLL-TRACKING GLOW DOT */}
         <motion.div
-          className="absolute z-20 neon-dot w-3.5 h-3.5 rounded-full"
+          className="absolute z-20 neon-dot w-3.5 h-3.5 rounded-full left-6 -ml-[6px] md:left-1/2 md:ml-0 md:-translate-x-1/2"
           style={{
             top: dotTop,
-            left: isMobile ? "18px" : "50%",
-            transform: "translateX(-50%)",
             background: "#00F5FF",
           }}
         />
