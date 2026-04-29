@@ -312,26 +312,23 @@ export default function Timeline() {
     >
       {/* ════════ TIMELINE SPINE ════════ */}
       <div className="relative max-w-4xl mx-auto">
-        {/* CENTRAL LINE — Mobile: left-aligned, Desktop: centered */}
-        <div
-          className="absolute top-0 bottom-0 timeline-line bg-gray-800 w-[2px]"
-          style={{ left: "12px" }}
-        />
-        {/* Desktop override via CSS */}
+        {/* Responsive overrides for desktop centering */}
         <style>{`
           @media (min-width: 768px) {
-            .timeline-line-main { left: 50% !important; transform: translateX(-50%); }
-            .timeline-dot-main { left: 50% !important; transform: translateX(-50%) !important; margin-left: 0 !important; }
+            .tl-spine { left: 50% !important; transform: translateX(-50%); }
+            .tl-dot { left: 50% !important; transform: translateX(-50%) !important; }
           }
         `}</style>
+
+        {/* CENTRAL LINE — Mobile: left-aligned, Desktop: centered */}
         <div
-          className="absolute top-0 bottom-0 timeline-line timeline-line-main bg-gray-800 w-[2px]"
+          className="absolute top-0 bottom-0 timeline-line tl-spine bg-gray-800 w-[2px]"
           style={{ left: "12px" }}
         />
 
         {/* SCROLL-TRACKING GLOW DOT */}
         <motion.div
-          className="absolute z-20 neon-dot w-3 h-3 sm:w-3.5 sm:h-3.5 rounded-full timeline-dot-main"
+          className="absolute z-20 neon-dot w-3 h-3 sm:w-3.5 sm:h-3.5 rounded-full tl-dot"
           style={{
             top: dotTop,
             left: "12px",
