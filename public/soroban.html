@@ -312,8 +312,8 @@ body{
    SOROBAN SIMULATOR — Fully Responsive Edition
    Dynamically calculates all sizes based on available space
    ============================================================ */
-const RODS = 7;
-const LABELS = ['10⁶','10⁵','10⁴','10³','10²','10¹','10⁰'];
+const RODS = 10;
+const LABELS = ['10⁹','10⁸','10⁷','10⁶','10⁵','10⁴','10³','10²','10¹','10⁰'];
 
 let state = Array.from({length:RODS}, ()=>({heaven:false, earth:0}));
 
@@ -476,7 +476,7 @@ function calculateValue(){
 
 function updateDisplay(){
   const d=document.getElementById('display');
-  d.textContent=calculateValue().toString().padStart(7,'0');
+  d.textContent=calculateValue().toString().padStart(RODS,'0');
   d.classList.add('flash');
   setTimeout(()=>d.classList.remove('flash'),180);
 }
