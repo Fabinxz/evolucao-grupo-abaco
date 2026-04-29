@@ -3,9 +3,9 @@
 import { useRef } from "react";
 import { motion, useInView } from "framer-motion";
 import {
-  Binary,
-  Landmark,
-  ShoppingCart,
+  Calculator,
+  BrainCircuit,
+  Globe2,
   Cpu,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
@@ -26,34 +26,34 @@ interface BentoCard {
 const CARDS: BentoCard[] = [
   {
     id: 1,
-    icon: Binary,
-    tag: "Sistema Numérico",
-    title: "Lógica Posicional",
-    body: "Cada haste do ábaco representa uma potência de base 10 — unidades, dezenas, centenas… As contas inferiores valem 1 e as superiores valem 5, formando um sistema posicional idêntico ao que usamos hoje. Esse mapeamento entre posição física e valor numérico é a base de toda a aritmética moderna.",
+    icon: Calculator,
+    tag: "Matemática",
+    title: "Sistema Decimal Posicional",
+    body: "Cada haste do ábaco representa uma potência de base 10 — unidades, dezenas, centenas. As contas inferiores valem 1 e as superiores valem 5. O valor de uma conta depende estritamente da haste em que ela está posicionada. Esse mecanismo materializa o sistema decimal posicional, a mesma fundação matemática que usamos hoje.",
     gridClass: "md:col-span-2 md:row-span-2",
   },
   {
     id: 2,
-    icon: Landmark,
-    tag: "Século IX",
-    title: "O Salto Algorítmico",
-    body: "O matemático persa Al-Khwarizmi formalizou procedimentos de cálculo inspirados nos ábacos, criando a noção de algoritmo — uma sequência finita de passos para resolver problemas.",
+    icon: BrainCircuit,
+    tag: "Cognição",
+    title: "Cálculo Mental e Tátil",
+    body: "Diferente de escrever em um papel, o ábaco exige manipulação física. O operador visualiza e toca os números, desenvolvendo uma memória muscular que permite realizar cálculos mentais complexos incrivelmente rápidos (o método conhecido como Anzan).",
     gridClass: "md:col-span-1 md:row-span-1",
   },
   {
     id: 3,
-    icon: ShoppingCart,
-    tag: "Economia Antiga",
-    title: "Impacto no Comércio",
-    body: "Do Império Romano à Rota da Seda, o ábaco viabilizou conversões monetárias, cálculos tributários e inventários que seriam impossíveis apenas de memória.",
+    icon: Globe2,
+    tag: "História",
+    title: "Adaptações Culturais",
+    body: "O design original evoluiu para o Suanpan chinês e depois para o Soroban japonês, que eliminou contas redundantes para focar na velocidade extrema. Os russos criaram o Schoty, adaptado para o comércio de rublos locais.",
     gridClass: "md:col-span-1 md:row-span-1",
   },
   {
     id: 4,
     icon: Cpu,
-    tag: "Computação Moderna",
-    title: "Do Ábaco ao Registrador",
-    body: "A lógica posicional do ábaco vive dentro de cada CPU moderna. Os registradores de processador armazenam valores em posições binárias — o mesmo princípio posicional, apenas em base 2 em vez de base 10. O ábaco não é um ancestral metafórico do computador; é um ancestral literal.",
+    tag: "Engenharia",
+    title: "O Princípio da Computação Discreta",
+    body: "A ideia de representar estados numéricos através de posições físicas discretas é o exato mesmo princípio das memórias de computadores modernos. Enquanto o ábaco usa contas deslizando em hastes para representar dados na base 10 (ou mista), um registrador de CPU utiliza transistores para representar dados na base 2. Ambos são máquinas de estado discretas construídas para processamento lógico.",
     gridClass: "md:col-span-3 md:row-span-1",
   },
 ];
