@@ -8,11 +8,11 @@ import { Ghost, Hand, Calculator } from "lucide-react";
    CONSTANTS & CONFIG
    ═══════════════════════════════════════════════════ */
 const NUM_RODS = 13;
-const BEAD_W = 68;
-const BEAD_H = 30;
-const BEAD_GAP = 5;
-const HEAVEN_H = 100;
-const EARTH_H = 200;
+const BEAD_W = 76;
+const BEAD_H = 34;
+const BEAD_GAP = 6;
+const HEAVEN_H = 110;
+const EARTH_H = 220;
 
 const LABELS = [
   "T", "B", "M", "c", "d", "u",
@@ -171,7 +171,7 @@ export default function SorobanSimulator() {
     <div className="w-full flex flex-col items-center justify-center p-4 relative">
       
       {/* ── HEADER CONSOLE ── */}
-      <div className="w-full max-w-7xl flex flex-col md:flex-row items-center justify-between gap-4 mb-8 bg-[#090909] p-4 rounded-xl border border-white/[0.05] shadow-[0_0_40px_rgba(0,0,0,0.5)]">
+      <div className="w-full max-w-[1200px] flex flex-col md:flex-row items-center justify-between gap-4 mb-8 bg-[#090909] p-4 rounded-xl border border-white/[0.05] shadow-[0_0_40px_rgba(0,0,0,0.5)]">
         
         {/* Toggle Switch */}
         <div className="flex items-center gap-3 bg-black/50 p-1.5 rounded-lg border border-white/10">
@@ -211,7 +211,7 @@ export default function SorobanSimulator() {
       </div>
 
       {/* ── SOROBAN BOARD ── */}
-      <div className="w-full max-w-7xl overflow-x-auto pb-4 scrollbar-hide flex justify-center">
+      <div className="w-full max-w-[1400px] overflow-x-auto pb-6 scrollbar-hide flex justify-center">
         <div className="min-w-max p-4 md:p-8 bg-gradient-to-b from-[#1a1a1a] to-[#0a0a0a] rounded-xl border-4 border-[#333] shadow-[0_20px_50px_rgba(0,0,0,0.8)] relative">
           
           {/* Wood Frame Texture */}
@@ -224,7 +224,7 @@ export default function SorobanSimulator() {
               <div key={r} className="relative flex flex-col items-center" style={{ width: BEAD_W }}>
                 
                 {/* Bamboo Rod (Background) */}
-                <div className="absolute top-0 bottom-0 w-2.5 bg-gradient-to-r from-[#222] via-[#444] to-[#111] rounded-full shadow-inner" />
+                <div className="absolute left-1/2 -translate-x-1/2 top-0 bottom-0 w-2.5 bg-gradient-to-r from-[#222] via-[#444] to-[#111] rounded-full shadow-inner" />
 
                 {/* HEAVEN COMPARTMENT */}
                 <div className="relative w-full" style={{ height: HEAVEN_H }}>
@@ -237,7 +237,7 @@ export default function SorobanSimulator() {
                 </div>
 
                 {/* DIVIDER BAR */}
-                <div className="w-20 h-5 bg-gradient-to-r from-[#222] via-[#555] to-[#222] rounded-sm my-1 shadow-md z-30 relative" />
+                <div className="w-24 h-5 bg-gradient-to-r from-[#222] via-[#555] to-[#222] rounded-sm my-1 shadow-md z-30 relative" />
 
                 {/* EARTH COMPARTMENT */}
                 <div className="relative w-full" style={{ height: EARTH_H }}>

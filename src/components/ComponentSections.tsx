@@ -29,7 +29,7 @@ function ComponentSection({
       id={id}
       className="relative w-full px-4 sm:px-6 md:px-8 pt-10 sm:pt-12 md:pt-16 pb-2"
     >
-      <div className="max-w-6xl mx-auto">
+      <div className={`${id === 'simulador' ? 'max-w-[1400px]' : 'max-w-6xl'} mx-auto`}>
         {/* Section header */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
