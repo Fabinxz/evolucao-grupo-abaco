@@ -174,17 +174,17 @@ export default function SorobanSimulator() {
       <div className="w-full max-w-[1200px] flex flex-col md:flex-row items-center justify-between gap-4 mb-8 bg-[#090909] p-4 rounded-xl border border-white/[0.05] shadow-[0_0_40px_rgba(0,0,0,0.5)]">
         
         {/* Toggle Switch */}
-        <div className="flex items-center gap-3 bg-black/50 p-1.5 rounded-lg border border-white/10">
+        <div className="flex w-full sm:w-auto justify-center items-center gap-2 sm:gap-3 bg-black/50 p-1.5 rounded-lg border border-white/10">
           <button 
             onClick={() => setIsGhostMode(false)}
-            className={`flex items-center gap-2 px-3 py-1.5 rounded-md text-xs tracking-widest uppercase transition-all duration-300 ${!isGhostMode ? 'bg-[#00F5FF]/20 text-[#00F5FF] shadow-[0_0_15px_rgba(0,245,255,0.2)]' : 'text-gray-500 hover:text-white'}`}
+            className={`flex items-center gap-2 px-3 py-2 sm:py-1.5 rounded-md text-[10px] sm:text-xs tracking-widest uppercase transition-all duration-300 ${!isGhostMode ? 'bg-[#00F5FF]/20 text-[#00F5FF] shadow-[0_0_15px_rgba(0,245,255,0.2)]' : 'text-gray-500 hover:text-white'}`}
           >
             <Hand className="w-3.5 h-3.5" />
             Manual
           </button>
           <button 
             onClick={() => setIsGhostMode(true)}
-            className={`flex items-center gap-2 px-3 py-1.5 rounded-md text-xs tracking-widest uppercase transition-all duration-300 ${isGhostMode ? 'bg-[#00F5FF]/20 text-[#00F5FF] shadow-[0_0_15px_rgba(0,245,255,0.2)]' : 'text-gray-500 hover:text-white'}`}
+            className={`flex items-center gap-2 px-3 py-2 sm:py-1.5 rounded-md text-[10px] sm:text-xs tracking-widest uppercase transition-all duration-300 ${isGhostMode ? 'bg-[#00F5FF]/20 text-[#00F5FF] shadow-[0_0_15px_rgba(0,245,255,0.2)]' : 'text-gray-500 hover:text-white'}`}
           >
             <Ghost className="w-3.5 h-3.5" />
             Fantasma
@@ -192,18 +192,18 @@ export default function SorobanSimulator() {
         </div>
 
         {/* LED Display */}
-        <div className="flex items-center gap-4 bg-black px-6 py-3 rounded border border-[#00F5FF]/20 shadow-[inset_0_0_20px_rgba(0,0,0,1)] relative overflow-hidden group">
+        <div className="flex items-center justify-center gap-2 sm:gap-4 bg-black px-4 sm:px-6 py-3 rounded border border-[#00F5FF]/20 shadow-[inset_0_0_20px_rgba(0,0,0,1)] relative overflow-hidden group w-full sm:w-auto">
           <div className="absolute inset-0 bg-[#00F5FF]/5 opacity-0 group-hover:opacity-100 transition-opacity" />
-          <span className="text-[#00F5FF]/40 font-mono text-2xl md:text-3xl tracking-[4px] md:tracking-[8px] pointer-events-none">
+          <span className="text-[#00F5FF]/40 font-mono text-xl sm:text-2xl md:text-3xl tracking-[2px] sm:tracking-[4px] md:tracking-[8px] pointer-events-none">
             [
           </span>
           <span 
-            className="text-[#00F5FF] font-mono text-3xl md:text-5xl font-bold tracking-[6px] md:tracking-[12px] drop-shadow-[0_0_12px_rgba(0,245,255,0.8)]"
+            className="text-[#00F5FF] font-mono text-xl sm:text-3xl md:text-5xl font-bold tracking-[3px] sm:tracking-[6px] md:tracking-[12px] drop-shadow-[0_0_12px_rgba(0,245,255,0.8)]"
             style={{ textShadow: "0 0 10px rgba(0,245,255,0.6), 0 0 20px rgba(0,245,255,0.4)" }}
           >
             {displayValue}
           </span>
-          <span className="text-[#00F5FF]/40 font-mono text-2xl md:text-3xl tracking-[4px] md:tracking-[8px] pointer-events-none">
+          <span className="text-[#00F5FF]/40 font-mono text-xl sm:text-2xl md:text-3xl tracking-[2px] sm:tracking-[4px] md:tracking-[8px] pointer-events-none">
             ]
           </span>
         </div>
@@ -211,8 +211,8 @@ export default function SorobanSimulator() {
       </div>
 
       {/* ── SOROBAN BOARD ── */}
-      <div className="w-full max-w-[1400px] overflow-x-auto pb-6 scrollbar-hide flex justify-center">
-        <div className="min-w-max p-4 md:p-8 bg-gradient-to-b from-[#1a1a1a] to-[#0a0a0a] rounded-xl border-4 border-[#333] shadow-[0_20px_50px_rgba(0,0,0,0.8)] relative">
+      <div className="w-full max-w-[1400px] overflow-x-auto pb-6 scrollbar-hide">
+        <div className="min-w-max w-fit mx-auto p-4 md:p-8 bg-gradient-to-b from-[#1a1a1a] to-[#0a0a0a] rounded-xl border-4 border-[#333] shadow-[0_20px_50px_rgba(0,0,0,0.8)] relative">
           
           {/* Wood Frame Texture */}
           <div className="absolute inset-0 rounded-lg opacity-20 pointer-events-none"
@@ -274,7 +274,7 @@ export default function SorobanSimulator() {
             <div className="absolute inset-0 bg-[#00F5FF]/10 blur-xl rounded-full" />
             <div className="relative flex items-center bg-[#090909]/80 backdrop-blur-md border border-[#00F5FF]/30 rounded-2xl overflow-hidden shadow-[0_0_30px_rgba(0,245,255,0.1)] p-3">
               <div className="pl-4 pr-3 text-[#00F5FF]/70">
-                <Calculator className="w-6 h-6" />
+                <Calculator className="w-5 h-5 sm:w-6 sm:h-6" />
               </div>
               <input
                 type="text"
@@ -282,7 +282,7 @@ export default function SorobanSimulator() {
                 onChange={(e) => setInputValue(e.target.value)}
                 placeholder="Ex: 10 + 15 * 2"
                 maxLength={30}
-                className="flex-1 bg-transparent border-none text-white text-2xl md:text-3xl font-bold placeholder:text-white/20 focus:outline-none focus:ring-0 py-3"
+                className="flex-1 w-full min-w-0 bg-transparent border-none text-white text-lg sm:text-2xl md:text-3xl font-bold placeholder:text-white/20 focus:outline-none focus:ring-0 py-2 sm:py-3"
                 style={{ fontFamily: "var(--font-mono)", letterSpacing: "2px" }}
               />
             </div>
