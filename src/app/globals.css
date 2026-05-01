@@ -45,15 +45,8 @@ body::before {
 }
 
 /* ═══════ SCROLLBAR ═══════ */
-::-webkit-scrollbar { width: 4px; }
-::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb {
-  background: rgba(0, 245, 255, 0.15);
-  border-radius: 4px;
-}
-::-webkit-scrollbar-thumb:hover {
-  background: rgba(0, 245, 255, 0.3);
-}
+::-webkit-scrollbar { display: none; }
+* { -ms-overflow-style: none; scrollbar-width: none; }
 
 /* ═══════ OUTLINE TEXT ═══════ */
 .text-outline {

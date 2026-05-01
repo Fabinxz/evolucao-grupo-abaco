@@ -117,9 +117,10 @@ interface CardProps {
   event: TimelineEvent;
   index: number;
   onClick: () => void;
+  isSelected: boolean;
 }
 
-function TimelineCard({ event, index, onClick }: CardProps) {
+function TimelineCard({ event, index, onClick, isSelected }: CardProps) {
   const ref = useRef<HTMLDivElement>(null);
   const isInView = useInView(ref, { once: false, amount: 0.25 });
   const isLeft = index % 2 === 0;
@@ -159,7 +160,7 @@ function TimelineCard({ event, index, onClick }: CardProps) {
 
       {/* ── CARD ── */}
       <motion.div
-        layoutId={`card-${event.id}`}
+        layout
         initial={{ opacity: 0, y: 40, scale: 0.97 }}
         whileInView={{ opacity: 1, y: 0, scale: 1 }}
         viewport={{ once: false, amount: 0.15 }}
@@ -169,6 +170,7 @@ function TimelineCard({ event, index, onClick }: CardProps) {
           w-[calc(100%-2.5rem)] ml-[2.5rem]
           md:w-[calc(50%-40px)] md:ml-0
           ${isLeft ? "md:mr-auto" : "md:ml-auto"}
+          ${isSelected ? "z-30 md:w-[calc(100%-80px)]" : "z-10"}
         `}
       >
         <div
@@ -177,7 +179,7 @@ function TimelineCard({ event, index, onClick }: CardProps) {
             relative rounded-lg overflow-hidden
             backdrop-blur-md cursor-pointer
             border transition-all duration-700
-            ${isInView ? "border-[#00F5FF]/30" : "border-gray-800"}
+            ${isInView || isSelected ? "border-[#00F5FF]/30" : "border-gray-800"}
             hover:border-[#00F5FF]/60 hover:shadow-[0_0_30px_rgba(0,245,255,0.15)]
           `}
           style={{
@@ -190,7 +192,7 @@ function TimelineCard({ event, index, onClick }: CardProps) {
           }}
         >
           {/* ── IMAGE CONTAINER ── */}
-          <motion.div layoutId={`image-${event.id}`} className="relative w-full aspect-[16/10] overflow-hidden">
+          <motion.div layout className={`relative w-full overflow-hidden transition-all duration-500 ${isSelected ? "aspect-video md:h-80" : "aspect-[16/10]"}`}>
             <img
               src={event.image}
               alt={event.title}
@@ -210,7 +212,7 @@ function TimelineCard({ event, index, onClick }: CardProps) {
               style={{ fontFamily: "'JetBrains Mono', monospace" }}
             >
               <motion.span
-                layoutId={`year-${event.id}`}
+                layout
                 className={`
                   text-lg sm:text-xl md:text-2xl font-bold tracking-wide
                   transition-all duration-500
@@ -224,7 +226,7 @@ function TimelineCard({ event, index, onClick }: CardProps) {
               >
                 {event.year}
               </motion.span>
-              <motion.span layoutId={`era-${event.id}`} className="ml-2 sm:ml-3 text-[8px] sm:text-[10px] text-gray-400 tracking-widest uppercase">
+              <motion.span layout className="ml-2 sm:ml-3 text-[8px] sm:text-[10px] text-gray-400 tracking-widest uppercase">
                 {event.era}
               </motion.span>
             </div>
@@ -275,21 +277,39 @@ function TimelineCard({ event, index, onClick }: CardProps) {
             )}
 
             {/* TITLE */}
-            <motion.h4 layoutId={`title-${event.id}`} className="text-sm sm:text-base md:text-lg font-semibold text-white/90 mb-1 sm:mb-2 tracking-tight">
+            <motion.h4 layout className={`font-semibold text-white/90 mb-1 sm:mb-2 tracking-tight ${isSelected ? "text-xl sm:text-2xl" : "text-sm sm:text-base md:text-lg"}`}>
               {event.title}
             </motion.h4>
 
             {/* DESCRIPTION */}
             <motion.p
-              layoutId={`desc-${event.id}`}
-              className="text-xs sm:text-sm leading-relaxed"
+              layout
+              className={`leading-relaxed ${isSelected ? "text-sm sm:text-base text-[#00F5FF]/80" : "text-xs sm:text-sm"}`}
               style={{
                 fontFamily: "'Inter', sans-serif",
-                color: "rgba(224, 224, 224, 0.8)",
+                color: isSelected ? undefined : "rgba(224, 224, 224, 0.8)",
               }}
             >
               {event.description}
             </motion.p>
+            
+            {/* DETAILED CONTENT (EXPANDED) */}
+            <AnimatePresence>
+              {isSelected && (
+                <motion.div
+                  initial={{ opacity: 0, height: 0, marginTop: 0 }}
+                  animate={{ opacity: 1, height: "auto", marginTop: 24 }}
+                  exit={{ opacity: 0, height: 0, marginTop: 0 }}
+                  className="overflow-hidden"
+                >
+                  <div className="pt-4 border-t border-white/10">
+                    <p className="text-sm sm:text-base leading-relaxed text-gray-300 font-sans">
+                      {event.detailedContent}
+                    </p>
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
           </div>
 
           {/* SUBTLE BOTTOM ACCENT */}
@@ -362,79 +382,16 @@ export default function Timeline() {
         {/* ════════ EVENTS ════════ */}
         <div className="relative flex flex-col gap-8 sm:gap-14 md:gap-20">
           {TIMELINE_DATA.map((event, index) => (
-            <TimelineCard key={event.id} event={event} index={index} onClick={() => setSelectedId(event.id)} />
+            <TimelineCard 
+              key={event.id} 
+              event={event} 
+              index={index} 
+              isSelected={selectedId === event.id}
+              onClick={() => setSelectedId(selectedId === event.id ? null : event.id)} 
+            />
           ))}
         </div>
       </div>
-
-      {/* ════════ EXPANDED MODAL ════════ */}
-      <AnimatePresence>
-        {selectedId && (
-          <>
-            {/* Backdrop */}
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              onClick={() => setSelectedId(null)}
-              className="fixed inset-0 z-40 bg-black/80 backdrop-blur-sm"
-            />
-            
-            {/* Modal Content */}
-            <div className="fixed inset-0 z-50 flex items-center justify-center p-4 pointer-events-none">
-              {TIMELINE_DATA.filter((e) => e.id === selectedId).map((event) => (
-                <motion.div
-                  key={event.id}
-                  layoutId={`card-${event.id}`}
-                  className="relative w-full max-w-2xl bg-[#090909] rounded-xl overflow-hidden border border-[#00F5FF]/30 shadow-[0_0_50px_rgba(0,245,255,0.1)] pointer-events-auto flex flex-col max-h-[90vh]"
-                >
-                  <button
-                    onClick={() => setSelectedId(null)}
-                    className="absolute top-4 right-4 z-20 p-2 rounded-full bg-black/50 hover:bg-[#00F5FF]/20 border border-white/10 hover:border-[#00F5FF]/50 text-white/70 hover:text-[#00F5FF] transition-all duration-300"
-                  >
-                    <X className="w-5 h-5" />
-                  </button>
-
-                  <motion.div layoutId={`image-${event.id}`} className="relative w-full h-48 sm:h-64 shrink-0">
-                    <img
-                      src={event.image}
-                      alt={event.title}
-                      className="object-cover w-full h-full"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-[#090909] via-transparent to-transparent" />
-                    <div className="absolute bottom-4 left-6" style={{ fontFamily: "'JetBrains Mono', monospace" }}>
-                      <motion.span layoutId={`year-${event.id}`} className="text-2xl sm:text-3xl font-bold text-[#00F5FF] drop-shadow-[0_0_15px_rgba(0,245,255,0.5)]">
-                        {event.year}
-                      </motion.span>
-                      <motion.span layoutId={`era-${event.id}`} className="ml-3 text-xs text-gray-400 tracking-widest uppercase">
-                        {event.era}
-                      </motion.span>
-                    </div>
-                  </motion.div>
-
-                  <div className="p-6 sm:p-8 overflow-y-auto">
-                    <motion.h3 layoutId={`title-${event.id}`} className="text-2xl sm:text-3xl font-bold text-white/90 mb-4">
-                      {event.title}
-                    </motion.h3>
-                    <motion.p layoutId={`desc-${event.id}`} className="text-sm sm:text-base text-[#00F5FF]/70 mb-6 font-medium">
-                      {event.description}
-                    </motion.p>
-                    
-                    <motion.div
-                      initial={{ opacity: 0, y: 20 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: 0.2 }}
-                      className="text-gray-300 leading-relaxed text-sm sm:text-base space-y-4 border-t border-white/10 pt-6"
-                    >
-                      <p>{event.detailedContent}</p>
-                    </motion.div>
-                  </div>
-                </motion.div>
-              ))}
-            </div>
-          </>
-        )}
-      </AnimatePresence>
     </section>
   );
 }
