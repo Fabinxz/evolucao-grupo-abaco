@@ -97,7 +97,7 @@ export function SimulatorSection({ children }: { children?: React.ReactNode }) {
       id="simulador"
       label="Simulador Interativo"
       title="Soroban Digital"
-      description="Experimente calcular no ábaco japonês — toque nas contas e veja o resultado em tempo real."
+      description="Experimente o processamento lógico do ábaco japonês: manipule as peças nas hastes e observe a computação dos valores em tempo real."
       icon={<Calculator className="w-4 h-4 text-[#00F5FF]/40" strokeWidth={1.5} />}
       comment="SOROBAN_SIMULATOR"
     >
@@ -111,9 +111,9 @@ export function VideoSection({ children }: { children?: React.ReactNode }) {
     /* <!-- VIDEO_EXHIBITION --> */
     <ComponentSection
       id="videos"
-      label="Acervo Audiovisual"
-      title="Perspectivas e Práticas"
-      description="Uma imersão na herança técnica do Soroban, explorando desde a mecânica de operação até sua influência na arquitetura da computação moderna."
+      label="ACERVO AUDIOVISUAL"
+      title="A Prática e a História"
+      description="Do manuseio físico da ferramenta milenar aos fundamentos matemáticos que pavimentaram o caminho para a ciência da computação."
       icon={<motion.div animate={{ rotate: 360 }} transition={{ duration: 10, repeat: Infinity, ease: "linear" }}><Calculator className="w-4 h-4 text-[#00F5FF]/40" strokeWidth={1.5} /></motion.div>}
       comment="VIDEO_EXHIBITION"
     >

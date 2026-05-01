@@ -98,17 +98,17 @@ function VideoCard({ title, subtitle, description, thumbnail, icon, duration }: 
 export default function VideoExhibition() {
   const videos = [
     {
-      title: "Manual de Operação: Soroban",
-      subtitle: "Técnicas de Cálculo",
-      description: "Dominar o ábaco exige ritmo e precisão. Neste guia, demonstramos a manipulação correta das contas celestiais e terrestres, focando na aplicação prática das regras de complementos para otimizar a velocidade de processamento mental.",
+      title: "Operando o Soroban na Prática",
+      subtitle: "HANDS-ON",
+      description: "Deixe a teoria de lado por um momento. Neste tutorial em vídeo, a Sabrina demonstra o uso real e físico de um Soroban. Entenda na prática como representar números, realizar operações básicas e sinta a mecânica tátil do cálculo manual que inspirou a lógica dos processadores modernos.",
       thumbnail: "/video_tutorial_thumb_1777654260013.png",
       icon: <GraduationCap className="w-5 h-5" />,
       duration: "08:45"
     },
     {
-      title: "O Ábaco e a Gênese do Computador",
-      subtitle: "Evolução Histórica",
-      description: "Muito antes dos transistores, a humanidade já utilizava sistemas posicionais para processar dados. Exploramos a conexão direta entre a engenharia do Soroban e o desenvolvimento das primeiras unidades lógicas e aritméticas, revelando uma linhagem tecnológica contínua.",
+      title: "Do Ábaco à Ciência da Computação",
+      subtitle: "HISTÓRIA DA COMPUTAÇÃO",
+      description: "Qual a verdadeira relação entre os primeiros instrumentos de cálculo da humanidade e os computadores atuais? Este minidocumentário explora a linha do tempo geral do ábaco e discute como a necessidade humana de abstrair e automatizar o processamento de dados deu origem à computação discreta.",
       thumbnail: "/video_history_thumb_1777654277759.png",
       icon: <BookOpen className="w-5 h-5" />,
       duration: "12:20"

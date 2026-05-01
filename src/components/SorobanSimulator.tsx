@@ -356,19 +356,31 @@ export default function SorobanSimulator() {
       {/* ── HEADER CONSOLE ── */}
       <div className="w-full max-w-[1200px] flex flex-col md:flex-row items-center justify-between gap-4 mb-8 bg-[#090909] p-4 rounded-xl border border-white/[0.05] shadow-[0_0_40px_rgba(0,0,0,0.5)]">
         
-        {/* Toggle Switch */}
+        {/* Toggle Switch & Reset */}
         <div className="flex w-full sm:w-auto justify-center items-center gap-2 sm:gap-3 bg-black/50 p-1.5 rounded-lg border border-white/10">
-          <button 
+          <button
             onClick={() => setIsGhostMode(false)}
-            className={`flex items-center gap-2 px-3 py-2 sm:py-1.5 rounded-md text-[10px] sm:text-xs tracking-widest uppercase transition-all duration-300 ${!isGhostMode ? 'bg-[#00F5FF]/20 text-[#00F5FF] shadow-[0_0_15px_rgba(0,245,255,0.2)]' : 'text-gray-500 hover:text-white'}`}
+            className={`flex items-center gap-2 px-4 py-2 rounded-md text-xs font-bold transition-all duration-300 ${
+              !isGhostMode
+                ? "bg-[#00F5FF]/10 text-[#00F5FF] shadow-[0_0_15px_rgba(0,245,255,0.2)]"
+                : "text-white/40 hover:text-white/70"
+            }`}
           >
             <Hand className="w-3.5 h-3.5" />
             Manual
           </button>
-          <button 
+          <button
             onClick={() => setIsGhostMode(true)}
-            className={`flex items-center gap-2 px-3 py-2 sm:py-1.5 rounded-md text-[10px] sm:text-xs tracking-widest uppercase transition-all duration-300 ${isGhostMode ? 'bg-[#00F5FF]/20 text-[#00F5FF] shadow-[0_0_15px_rgba(0,245,255,0.2)]' : 'text-gray-500 hover:text-white'}`}
+            className={`relative flex items-center gap-2 px-4 py-2 rounded-md text-xs font-bold transition-all duration-300 ${
+              isGhostMode
+                ? "bg-[#00F5FF]/10 text-[#00F5FF] shadow-[0_0_15px_rgba(0,245,255,0.2)]"
+                : "text-white/40 hover:text-white/70"
+            }`}
           >
+            {/* Attention Grabber Pulse - Much more subtle */}
+            {!isGhostMode && (
+              <span className="absolute inset-0 rounded-md ring-1 ring-[#00F5FF]/30 animate-pulse pointer-events-none" />
+            )}
             <Ghost className="w-3.5 h-3.5" />
             Fantasma
           </button>

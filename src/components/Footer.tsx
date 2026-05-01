@@ -68,8 +68,18 @@ export default function Footer() {
           </div>
         </div>
 
-        {/* Right — Version */}
-        <div className="flex flex-col sm:flex-row items-center gap-6 mt-6 md:mt-0">
+        {/* Right — Version & Repo */}
+        <div className="flex flex-col items-center md:items-end gap-4 mt-6 md:mt-0">
+          <a
+            href="https://github.com/Fabinxz/evolucao-grupo-abaco"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="group flex items-center gap-2 px-4 py-2 bg-[#00F5FF]/5 border border-[#00F5FF]/20 rounded text-[10px] tracking-[2px] uppercase text-[#00F5FF] hover:bg-[#00F5FF]/10 transition-all duration-300 shadow-[0_0_15px_rgba(0,245,255,0.05)]"
+          >
+            <Terminal className="w-3.5 h-3.5" />
+            Código Fonte
+            <ExternalLink className="w-3.5 h-3.5 opacity-0 group-hover:opacity-100 transition-opacity translate-x-[-4px] group-hover:translate-x-0" />
+          </a>
           <p className="text-[10px] tracking-[1px] text-[#00F5FF]/30 uppercase">
             {year}
           </p>
