@@ -211,8 +211,8 @@ export default function SorobanSimulator() {
       </div>
 
       {/* ── SOROBAN BOARD ── */}
-      <div className="w-full max-w-[1400px] overflow-x-auto pb-6 scrollbar-hide">
-        <div className="min-w-max w-fit mx-auto p-4 md:p-8 bg-gradient-to-b from-[#1a1a1a] to-[#0a0a0a] rounded-xl border-4 border-[#333] shadow-[0_20px_50px_rgba(0,0,0,0.8)] relative">
+      <div className="w-full max-w-[1400px] overflow-x-auto pb-6 scrollbar-hide flex justify-center">
+        <div className="min-w-max p-4 md:p-8 bg-gradient-to-b from-[#1a1a1a] to-[#0a0a0a] rounded-xl border-4 border-[#333] shadow-[0_20px_50px_rgba(0,0,0,0.8)] relative">
           
           {/* Wood Frame Texture */}
           <div className="absolute inset-0 rounded-lg opacity-20 pointer-events-none"
