@@ -8,11 +8,11 @@ import { Ghost, Hand, Calculator } from "lucide-react";
    CONSTANTS & CONFIG
    ═══════════════════════════════════════════════════ */
 const NUM_RODS = 13;
-const BEAD_W = 56;
-const BEAD_H = 24;
-const BEAD_GAP = 4;
-const HEAVEN_H = 80;
-const EARTH_H = 160;
+const BEAD_W = 68;
+const BEAD_H = 30;
+const BEAD_GAP = 5;
+const HEAVEN_H = 100;
+const EARTH_H = 200;
 
 const LABELS = [
   "T", "B", "M", "c", "d", "u",
@@ -171,7 +171,7 @@ export default function SorobanSimulator() {
     <div className="w-full flex flex-col items-center justify-center p-4 relative">
       
       {/* ── HEADER CONSOLE ── */}
-      <div className="w-full max-w-4xl flex flex-col md:flex-row items-center justify-between gap-4 mb-8 bg-[#090909] p-4 rounded-xl border border-white/[0.05] shadow-[0_0_40px_rgba(0,0,0,0.5)]">
+      <div className="w-full max-w-7xl flex flex-col md:flex-row items-center justify-between gap-4 mb-8 bg-[#090909] p-4 rounded-xl border border-white/[0.05] shadow-[0_0_40px_rgba(0,0,0,0.5)]">
         
         {/* Toggle Switch */}
         <div className="flex items-center gap-3 bg-black/50 p-1.5 rounded-lg border border-white/10">
@@ -211,7 +211,7 @@ export default function SorobanSimulator() {
       </div>
 
       {/* ── SOROBAN BOARD ── */}
-      <div className="w-full max-w-4xl overflow-x-auto pb-4 scrollbar-hide flex justify-center">
+      <div className="w-full max-w-7xl overflow-x-auto pb-4 scrollbar-hide flex justify-center">
         <div className="min-w-max p-4 md:p-8 bg-gradient-to-b from-[#1a1a1a] to-[#0a0a0a] rounded-xl border-4 border-[#333] shadow-[0_20px_50px_rgba(0,0,0,0.8)] relative">
           
           {/* Wood Frame Texture */}
@@ -224,7 +224,7 @@ export default function SorobanSimulator() {
               <div key={r} className="relative flex flex-col items-center" style={{ width: BEAD_W }}>
                 
                 {/* Bamboo Rod (Background) */}
-                <div className="absolute top-0 bottom-0 w-1.5 bg-gradient-to-r from-[#222] via-[#444] to-[#111] rounded-full shadow-inner" />
+                <div className="absolute top-0 bottom-0 w-2.5 bg-gradient-to-r from-[#222] via-[#444] to-[#111] rounded-full shadow-inner" />
 
                 {/* HEAVEN COMPARTMENT */}
                 <div className="relative w-full" style={{ height: HEAVEN_H }}>
@@ -237,7 +237,7 @@ export default function SorobanSimulator() {
                 </div>
 
                 {/* DIVIDER BAR */}
-                <div className="w-14 h-4 bg-gradient-to-r from-[#222] via-[#555] to-[#222] rounded-sm my-1 shadow-md z-30 relative" />
+                <div className="w-20 h-5 bg-gradient-to-r from-[#222] via-[#555] to-[#222] rounded-sm my-1 shadow-md z-30 relative" />
 
                 {/* EARTH COMPARTMENT */}
                 <div className="relative w-full" style={{ height: EARTH_H }}>
@@ -269,12 +269,12 @@ export default function SorobanSimulator() {
             initial={{ opacity: 0, y: -20, height: 0 }}
             animate={{ opacity: 1, y: 0, height: "auto" }}
             exit={{ opacity: 0, y: -20, height: 0 }}
-            className="mt-6 relative max-w-md w-full"
+            className="mt-8 relative max-w-xl w-full"
           >
             <div className="absolute inset-0 bg-[#00F5FF]/10 blur-xl rounded-full" />
-            <div className="relative flex items-center bg-[#090909]/80 backdrop-blur-md border border-[#00F5FF]/30 rounded-2xl overflow-hidden shadow-[0_0_30px_rgba(0,245,255,0.1)] p-2">
+            <div className="relative flex items-center bg-[#090909]/80 backdrop-blur-md border border-[#00F5FF]/30 rounded-2xl overflow-hidden shadow-[0_0_30px_rgba(0,245,255,0.1)] p-3">
               <div className="pl-4 pr-3 text-[#00F5FF]/70">
-                <Calculator className="w-5 h-5" />
+                <Calculator className="w-6 h-6" />
               </div>
               <input
                 type="text"
@@ -282,7 +282,7 @@ export default function SorobanSimulator() {
                 onChange={(e) => setInputValue(e.target.value)}
                 placeholder="Ex: 10 + 15 * 2"
                 maxLength={30}
-                className="flex-1 bg-transparent border-none text-white text-xl md:text-2xl font-bold placeholder:text-white/20 focus:outline-none focus:ring-0 py-3"
+                className="flex-1 bg-transparent border-none text-white text-2xl md:text-3xl font-bold placeholder:text-white/20 focus:outline-none focus:ring-0 py-3"
                 style={{ fontFamily: "var(--font-mono)", letterSpacing: "2px" }}
               />
             </div>
