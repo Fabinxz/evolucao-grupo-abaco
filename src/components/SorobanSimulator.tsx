@@ -55,7 +55,7 @@ function Bead({ active, isHeaven, index = 0, activeCount = 0, onClick, disabled 
     <motion.div
       layout
       initial={false}
-      transition={{ type: "spring", stiffness: 120, damping: 14, mass: 0.8 }}
+      transition={{ type: "spring", stiffness: 50, damping: 20, mass: 1 }}
       onClick={() => { if (!disabled) onClick(); }}
       className={`absolute left-1/2 -translate-x-1/2 ${active ? 'z-20' : 'z-10'} ${disabled ? 'cursor-default' : 'cursor-pointer'}`}
       style={{
@@ -100,6 +100,7 @@ export default function SorobanSimulator() {
   // Tutor Mode State
   const [tutorMessage, setTutorMessage] = useState<string>("Aguardando equação...");
   const [displayedGhostValue, setDisplayedGhostValue] = useState<string>("0");
+  const [activeTutorRod, setActiveTutorRod] = useState<number | null>(null);
   const sequenceRef = useRef(0);
 
   // Responsive scale hook to fit the massive soroban perfectly into ANY viewport
@@ -146,8 +147,8 @@ export default function SorobanSimulator() {
         if (isNaN(currentValue)) throw new Error("Invalid");
         
         setDisplayedGhostValue(currentValue.toString());
-        setTutorMessage(`> Passo 1: Registrando valor inicial (${currentValue})...`);
-        await pause(800);
+        setTutorMessage(`> Registrando valor inicial (${currentValue})...`);
+        await pause(1500);
         if (sequenceRef.current !== currentSeq) return;
 
         for (let i = 1; i < tokens.length - 1; i += 2) {
@@ -169,42 +170,105 @@ export default function SorobanSimulator() {
               const placeName = power === 0 ? "Unidades" : power === 1 ? "Dezenas" : power === 2 ? "Centenas" : "Milhares";
               const v = Math.floor(currentValue / Math.pow(10, power)) % 10;
               const d = digitVal;
-              let explanation = "";
+              
+              // Determine target rod (0 to 12). Unidades (power=0) -> Rod 12. Dezenas (power=1) -> Rod 11.
+              const targetRod = NUM_RODS - 1 - power;
+
+              setActiveTutorRod(targetRod);
 
               if (op === "+") {
                 if (v + d >= 10) {
-                  explanation = `Regra do 10 (+${d}): Adicionamos 1 na haste à esquerda e retiramos ${10 - d} na atual.`;
+                  setTutorMessage(`> [${placeName}] Queremos somar ${d}, mas faltam peças nesta haste.`);
+                  await pause(2500);
+                  if (sequenceRef.current !== currentSeq) return;
+
+                  setActiveTutorRod(targetRod - 1);
+                  setTutorMessage(`> Passo 1: Pegamos 1 peça 'emprestada' da casa vizinha à esquerda (+10).`);
+                  currentValue += Math.pow(10, power + 1);
+                  setDisplayedGhostValue(Math.max(0, currentValue).toString());
+                  await pause(2500);
+                  if (sequenceRef.current !== currentSeq) return;
+
+                  setActiveTutorRod(targetRod);
+                  setTutorMessage(`> Passo 2: Para compensar, retiramos ${10 - d} peças das ${placeName} (-${10 - d}).`);
+                  currentValue -= (10 - d) * Math.pow(10, power);
+                  setDisplayedGhostValue(Math.max(0, currentValue).toString());
+                  await pause(2500);
                 } else if (v < 5 && v + d >= 5) {
-                  explanation = `Regra do 5 (+${d}): Abaixamos a celestial (+5) e retiramos ${5 - d} inferior(es).`;
+                  setTutorMessage(`> [${placeName}] Queremos somar ${d}, mas faltam peças terrestres.`);
+                  await pause(2500);
+                  if (sequenceRef.current !== currentSeq) return;
+
+                  setTutorMessage(`> Passo 1: Abaixamos a conta Celestial que vale 5 (+5).`);
+                  currentValue += 5 * Math.pow(10, power);
+                  setDisplayedGhostValue(Math.max(0, currentValue).toString());
+                  await pause(2500);
+                  if (sequenceRef.current !== currentSeq) return;
+
+                  setTutorMessage(`> Passo 2: Para compensar, retiramos ${5 - d} peças terrestres (-${5 - d}).`);
+                  currentValue -= (5 - d) * Math.pow(10, power);
+                  setDisplayedGhostValue(Math.max(0, currentValue).toString());
+                  await pause(2500);
                 } else {
-                  explanation = `Soma Direta (+${d}): Subimos conta(s) na haste.`;
+                  setTutorMessage(`> [${placeName}] Subimos ${d} conta(s) nas ${placeName} diretamente.`);
+                  currentValue += placeValue;
+                  setDisplayedGhostValue(Math.max(0, currentValue).toString());
+                  await pause(2500);
                 }
-                currentValue += placeValue;
               } else {
                 if (v - d < 0) {
-                  explanation = `Regra do 10 (-${d}): Retiramos 1 da haste à esquerda e devolvemos ${10 - d} na atual.`;
+                  setTutorMessage(`> [${placeName}] Queremos subtrair ${d}, mas faltam peças nesta haste.`);
+                  await pause(2500);
+                  if (sequenceRef.current !== currentSeq) return;
+
+                  setActiveTutorRod(targetRod - 1);
+                  setTutorMessage(`> Passo 1: Retiramos 1 peça da casa vizinha à esquerda (-10).`);
+                  currentValue -= Math.pow(10, power + 1);
+                  setDisplayedGhostValue(Math.max(0, currentValue).toString());
+                  await pause(2500);
+                  if (sequenceRef.current !== currentSeq) return;
+
+                  setActiveTutorRod(targetRod);
+                  setTutorMessage(`> Passo 2: Para compensar, devolvemos ${10 - d} peças nas ${placeName} (+${10 - d}).`);
+                  currentValue += (10 - d) * Math.pow(10, power);
+                  setDisplayedGhostValue(Math.max(0, currentValue).toString());
+                  await pause(2500);
                 } else if (v >= 5 && v - d < 5) {
-                  explanation = `Regra do 5 (-${d}): Subimos a celestial (-5) e devolvemos ${5 - d} inferior(es).`;
+                  setTutorMessage(`> [${placeName}] Queremos subtrair ${d}, mas precisamos usar a conta Celestial.`);
+                  await pause(2500);
+                  if (sequenceRef.current !== currentSeq) return;
+
+                  setTutorMessage(`> Passo 1: Retiramos a conta Celestial (-5).`);
+                  currentValue -= 5 * Math.pow(10, power);
+                  setDisplayedGhostValue(Math.max(0, currentValue).toString());
+                  await pause(2500);
+                  if (sequenceRef.current !== currentSeq) return;
+
+                  setTutorMessage(`> Passo 2: Para compensar, devolvemos ${5 - d} peças terrestres (+${5 - d}).`);
+                  currentValue += (5 - d) * Math.pow(10, power);
+                  setDisplayedGhostValue(Math.max(0, currentValue).toString());
+                  await pause(2500);
                 } else {
-                  explanation = `Subtração Direta (-${d}): Abaixamos conta(s) na haste.`;
+                  setTutorMessage(`> [${placeName}] Abaixamos ${d} conta(s) nas ${placeName} diretamente.`);
+                  currentValue -= placeValue;
+                  setDisplayedGhostValue(Math.max(0, currentValue).toString());
+                  await pause(2500);
                 }
-                currentValue -= placeValue;
               }
               
-              setDisplayedGhostValue(Math.max(0, currentValue).toString());
-              setTutorMessage(`> [${placeName}] ${explanation}`);
-              await pause(1500);
               if (sequenceRef.current !== currentSeq) return;
             }
           } else {
+            setActiveTutorRod(null);
             currentValue = op === "*" ? currentValue * numVal : Math.floor(currentValue / numVal);
             setDisplayedGhostValue(Math.max(0, currentValue).toString());
-            setTutorMessage(`> Operação Complexa: ${op === "*" ? "Multiplicando por" : "Dividindo por"} ${numVal}...`);
-            await pause(1200);
+            setTutorMessage(`> Operação Completa: ${op === "*" ? "Multiplicando" : "Dividindo"} tudo por ${numVal}...`);
+            await pause(2500);
             if (sequenceRef.current !== currentSeq) return;
           }
         }
         
+        setActiveTutorRod(null);
         setTutorMessage(`> Cálculo finalizado: ${currentValue}`);
         
       } catch (err) {
@@ -225,6 +289,7 @@ export default function SorobanSimulator() {
       setInputValue("");
       setDisplayedGhostValue("0");
       setTutorMessage("> Aguardando equação...");
+      setActiveTutorRod(null);
       sequenceRef.current++; // Aborts any ongoing async sequence
     } else {
       setManualRods(Array.from({ length: NUM_RODS }).map(() => ({ heaven: 0, earth: 0 })));
@@ -355,7 +420,11 @@ export default function SorobanSimulator() {
           {/* Rods Container */}
           <div className="flex" style={{ gap: "20px" }}>
             {activeRods.map((rod, r) => (
-              <div key={r} className="relative flex flex-col items-center flex-shrink-0" style={{ width: BEAD_W, minWidth: BEAD_W }}>
+              <div 
+                key={r} 
+                className={`relative flex flex-col items-center flex-shrink-0 transition-all duration-700 rounded-lg p-1 ${activeTutorRod === r ? 'bg-[#00F5FF]/20 shadow-[0_0_30px_rgba(0,245,255,0.4)] ring-2 ring-[#00F5FF]' : ''}`} 
+                style={{ width: BEAD_W + 8, minWidth: BEAD_W + 8 }}
+              >
                 
                 {/* Bamboo Rod (Background) */}
                 <div className="absolute left-1/2 -translate-x-1/2 top-0 bottom-0 w-2.5 bg-gradient-to-r from-[#222] via-[#444] to-[#111] rounded-full shadow-inner" />
