@@ -31,48 +31,48 @@ const CARDS: BentoCard[] = [
     icon: Cog,
     tag: "Fundação",
     title: "A Origem Mecânica",
-    body: "O ábaco, surgido na Mesopotâmia, é o primeiro instrumento de cálculo mecânico e ancestral direto dos computadores modernos. Facilitava operações rápidas, moldando o desenvolvimento inicial do pensamento lógico-matemático humano.",
-    gridClass: "md:col-span-2 md:row-span-2",
+    body: "Surgido na Mesopotâmia por volta de 2500 a.C., é o ancestral dos computadores, moldando o desenvolvimento inicial do pensamento lógico-matemático.",
+    gridClass: "md:col-span-3 md:row-span-1",
   },
   {
     id: 2,
-    icon: Calculator,
-    tag: "Matemática",
-    title: "Sistema Decimal Posicional",
-    body: "Cada haste representa uma potência de base 10 (unidades, dezenas...). O valor da conta depende de sua posição. É a materialização física da mesma fundação matemática que usamos hoje.",
+    icon: Coins,
+    tag: "Economia",
+    title: "Uso no Comércio Antigo",
+    body: "Funcionava como uma 'calculadora manual', ajudando comerciantes a organizar cálculos complexos de transações e impostos de forma eficiente.",
     gridClass: "md:col-span-1 md:row-span-1",
   },
   {
     id: 3,
-    icon: Coins,
-    tag: "Economia",
-    title: "O Motor do Comércio Antigo",
-    body: "Antes das calculadoras, foi a ferramenta vital para o comércio. Transformou o caos das transações primitivas em um sistema organizado, permitindo o controle rápido de mercadorias e impostos.",
+    icon: Calculator,
+    tag: "Matemática",
+    title: "Uso na Matemática",
+    body: "Contribuiu brutalmente para o desenvolvimento do raciocínio lógico e para a compreensão tátil das operações básicas na história da matemática.",
     gridClass: "md:col-span-1 md:row-span-1",
   },
   {
     id: 4,
     icon: Brain,
-    tag: "Cognição",
-    title: "Cálculo Mental (Anzan)",
-    body: "A manipulação física exige o uso conjunto da visão e do tato. O operador desenvolve uma memória muscular profunda, permitindo realizar cálculos mentais incrivelmente rápidos, superando até calculadoras eletrônicas.",
-    gridClass: "md:col-span-1 md:row-span-1",
+    tag: "Lógica",
+    title: "Sistema Decimal Posicional",
+    body: "Cada haste representa potências de base 10 (unidades, dezenas...). A fundação matemática da notação posicional que usamos hoje.",
+    gridClass: "md:col-span-1 md:row-span-2",
   },
   {
     id: 5,
     icon: GraduationCap,
     tag: "Legado",
-    title: "Sobrevivência na Sociedade Atual",
-    body: "Com a era digital, perdeu seu uso comercial, mas encontrou um novo propósito insubstituível. Hoje funciona como uma poderosa ferramenta educacional e pedagógica para o desenvolvimento cognitivo.",
-    gridClass: "md:col-span-1 md:row-span-1",
+    title: "Uso na Sociedade Atual",
+    body: "Embora o uso prático tenha diminuído frente às calculadoras, continua valorizado como ferramenta educacional para o desenvolvimento cognitivo e Anzan (cálculo mental cego).",
+    gridClass: "md:col-span-2 md:row-span-1",
   },
   {
     id: 6,
     icon: Cpu,
     tag: "Engenharia",
     title: "O Princípio da Computação Discreta",
-    body: "A ideia de representar estados numéricos através de posições físicas discretas é o exato princípio das memórias modernas. O ábaco usa contas deslizantes; a CPU usa transistores. Ambas são máquinas de estados construídas para processamento lógico.",
-    gridClass: "md:col-span-4 md:row-span-1",
+    body: "Contas deslizantes mapeiam estados na base 10; registradores de CPU usam transistores na base 2. Ambas representam o exato mesmo princípio lógico da computação discreta.",
+    gridClass: "md:col-span-3 md:row-span-1",
   },
 ];
 
@@ -207,7 +207,7 @@ export default function BentoGrid() {
         </motion.div>
 
         {/* Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-3 sm:gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-3 sm:gap-4">
           {CARDS.map((card, i) => (
             <BentoCardItem key={card.id} card={card} index={i} />
           ))}

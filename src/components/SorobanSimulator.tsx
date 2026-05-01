@@ -1,8 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { motion } from "framer-motion";
-import { Ghost, Calculator } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import { Ghost, Hand, Calculator } from "lucide-react";
 
 /* ═══════════════════════════════════════════════════
    CONSTANTS & CONFIG
@@ -29,15 +29,15 @@ interface BeadProps {
   isHeaven: boolean;
   index?: number;
   activeCount?: number;
+  onClick: () => void;
+  disabled: boolean;
 }
 
-function Bead({ active, isHeaven, index = 0, activeCount = 0 }: BeadProps) {
+function Bead({ active, isHeaven, index = 0, activeCount = 0, onClick, disabled }: BeadProps) {
   let top = 0;
   if (isHeaven) {
-    // Heaven bead: active means it's pushed DOWN towards the center bar
     top = active ? (HEAVEN_H - BEAD_H - 2) : 2;
   } else {
-    // Earth beads: active means they are pushed UP towards the center bar
     if (active) {
       top = 2 + index * (BEAD_H + BEAD_GAP);
     } else {
@@ -54,7 +54,8 @@ function Bead({ active, isHeaven, index = 0, activeCount = 0 }: BeadProps) {
       layout
       initial={false}
       transition={{ type: "spring", stiffness: 120, damping: 14, mass: 0.8 }}
-      className={`absolute left-1/2 -translate-x-1/2 ${active ? 'z-20' : 'z-10'}`}
+      onClick={() => { if (!disabled) onClick(); }}
+      className={`absolute left-1/2 -translate-x-1/2 ${active ? 'z-20' : 'z-10'} ${disabled ? 'cursor-default' : 'cursor-pointer'}`}
       style={{
         width: BEAD_W,
         height: BEAD_H,
@@ -67,7 +68,6 @@ function Bead({ active, isHeaven, index = 0, activeCount = 0 }: BeadProps) {
         filter: active ? "drop-shadow(0 0 8px rgba(0,245,255,0.6)) brightness(1.1)" : "drop-shadow(0 2px 4px rgba(0,0,0,0.8))"
       }}
     >
-      {/* Inner Bevel */}
       <div 
         className="absolute inset-0 pointer-events-none"
         style={{
@@ -75,7 +75,6 @@ function Bead({ active, isHeaven, index = 0, activeCount = 0 }: BeadProps) {
           background: "linear-gradient(180deg, rgba(255,255,255,0.15) 0%, transparent 40%, rgba(0,0,0,0.3) 100%)"
         }}
       />
-      {/* Center ridge */}
       <div 
         className="absolute top-[35%] left-[12%] right-[12%] h-[30%] pointer-events-none"
         style={{
@@ -91,39 +90,109 @@ function Bead({ active, isHeaven, index = 0, activeCount = 0 }: BeadProps) {
    MAIN COMPONENT
    ═══════════════════════════════════════════════════ */
 export default function SorobanSimulator() {
+  const [isGhostMode, setIsGhostMode] = useState(false);
   const [inputValue, setInputValue] = useState("");
+  const [manualRods, setManualRods] = useState(
+    Array.from({ length: NUM_RODS }).map(() => ({ heaven: 0, earth: 0 }))
+  );
 
-  // Process input to generate rods
+  // Derive ghost rods from input
   const strVal = inputValue.replace(/[^0-9]/g, "").slice(0, NUM_RODS);
-  
-  const rods = Array.from({ length: NUM_RODS }).map((_, i) => {
+  const ghostRods = Array.from({ length: NUM_RODS }).map((_, i) => {
     const strIndex = i - (NUM_RODS - strVal.length);
     if (strIndex >= 0 && strIndex < strVal.length) {
       const digit = parseInt(strVal[strIndex], 10);
-      return {
-        heaven: digit >= 5 ? 1 : 0,
-        earth: digit % 5,
-        isActive: true,
-        digit
-      };
+      return { heaven: digit >= 5 ? 1 : 0, earth: digit % 5 };
     }
-    return { heaven: 0, earth: 0, isActive: false, digit: 0 };
+    return { heaven: 0, earth: 0 };
   });
 
-  return (
-    <div className="w-full flex flex-col items-center justify-center p-4">
+  const activeRods = isGhostMode ? ghostRods : manualRods;
+
+  // Calculate Display Value
+  const displayValue = activeRods.map(r => (r.heaven * 5 + r.earth).toString()).join('');
+
+  const handleBeadClick = (rodIndex: number, isHeaven: boolean, beadIndex?: number) => {
+    if (isGhostMode) return;
+    
+    setManualRods(prev => {
+      const newRods = [...prev];
+      const rod = { ...newRods[rodIndex] };
+
+      if (isHeaven) {
+        rod.heaven = rod.heaven === 1 ? 0 : 1;
+      } else {
+        // If clicking an active bead, deactivate it and all below it.
+        // Wait, in soroban: 
+        // Array index 0 is top earth bead, index 3 is bottom earth bead.
+        // activeCount goes from 0 to 4.
+        // If we click bead index `b`, and it is active (b < activeCount), we set activeCount to `b`.
+        // If it is inactive (b >= activeCount), we set activeCount to `b + 1`.
+        if (beadIndex !== undefined) {
+          if (beadIndex < rod.earth) {
+            rod.earth = beadIndex;
+          } else {
+            rod.earth = beadIndex + 1;
+          }
+        }
+      }
       
-      {/* TITLE & DECORATION */}
-      <div className="flex items-center gap-3 mb-8">
-        <Ghost className="w-6 h-6 text-[#00F5FF]" />
-        <h2 className="text-2xl md:text-3xl font-bold tracking-widest text-white/90" style={{ fontFamily: "var(--font-display)" }}>
-          MODO FANTASMA
-        </h2>
+      newRods[rodIndex] = rod;
+      return newRods;
+    });
+  };
+
+  const toggleMode = () => {
+    setIsGhostMode(!isGhostMode);
+    // Optionally clear input/manual state on swap, but leaving it allows seamless toggling to view different states.
+  };
+
+  return (
+    <div className="w-full flex flex-col items-center justify-center p-4 relative">
+      
+      {/* ── HEADER CONSOLE ── */}
+      <div className="w-full max-w-4xl flex flex-col md:flex-row items-center justify-between gap-4 mb-8 bg-[#090909] p-4 rounded-xl border border-white/[0.05] shadow-[0_0_40px_rgba(0,0,0,0.5)]">
+        
+        {/* Toggle Switch */}
+        <div className="flex items-center gap-3 bg-black/50 p-1.5 rounded-lg border border-white/10">
+          <button 
+            onClick={() => setIsGhostMode(false)}
+            className={`flex items-center gap-2 px-3 py-1.5 rounded-md text-xs tracking-widest uppercase transition-all duration-300 ${!isGhostMode ? 'bg-[#00F5FF]/20 text-[#00F5FF] shadow-[0_0_15px_rgba(0,245,255,0.2)]' : 'text-gray-500 hover:text-white'}`}
+          >
+            <Hand className="w-3.5 h-3.5" />
+            Manual
+          </button>
+          <button 
+            onClick={() => setIsGhostMode(true)}
+            className={`flex items-center gap-2 px-3 py-1.5 rounded-md text-xs tracking-widest uppercase transition-all duration-300 ${isGhostMode ? 'bg-[#00F5FF]/20 text-[#00F5FF] shadow-[0_0_15px_rgba(0,245,255,0.2)]' : 'text-gray-500 hover:text-white'}`}
+          >
+            <Ghost className="w-3.5 h-3.5" />
+            Fantasma
+          </button>
+        </div>
+
+        {/* LED Display */}
+        <div className="flex items-center gap-4 bg-black px-6 py-2 rounded border border-[#00F5FF]/20 shadow-[inset_0_0_20px_rgba(0,0,0,1)] relative overflow-hidden group">
+          <div className="absolute inset-0 bg-[#00F5FF]/5 opacity-0 group-hover:opacity-100 transition-opacity" />
+          <span className="text-[#00F5FF]/40 font-mono text-xl md:text-2xl tracking-[4px] md:tracking-[8px] pointer-events-none">
+            [
+          </span>
+          <span 
+            className="text-[#00F5FF] font-mono text-2xl md:text-4xl font-bold tracking-[6px] md:tracking-[12px] drop-shadow-[0_0_12px_rgba(0,245,255,0.8)]"
+            style={{ textShadow: "0 0 10px rgba(0,245,255,0.6), 0 0 20px rgba(0,245,255,0.4)" }}
+          >
+            {displayValue}
+          </span>
+          <span className="text-[#00F5FF]/40 font-mono text-xl md:text-2xl tracking-[4px] md:tracking-[8px] pointer-events-none">
+            ]
+          </span>
+        </div>
+
       </div>
 
-      {/* SOROBAN BOARD */}
-      <div className="w-full max-w-4xl overflow-x-auto pb-8 scrollbar-hide flex justify-center">
-        <div className="min-w-max p-4 md:p-8 bg-gradient-to-b from-[#1a1a1a] to-[#0a0a0a] rounded-xl border-4 border-[#333] shadow-2xl relative">
+      {/* ── SOROBAN BOARD ── */}
+      <div className="w-full max-w-4xl overflow-x-auto pb-4 scrollbar-hide flex justify-center">
+        <div className="min-w-max p-4 md:p-8 bg-gradient-to-b from-[#1a1a1a] to-[#0a0a0a] rounded-xl border-4 border-[#333] shadow-[0_20px_50px_rgba(0,0,0,0.8)] relative">
           
           {/* Wood Frame Texture */}
           <div className="absolute inset-0 rounded-lg opacity-20 pointer-events-none"
@@ -131,7 +200,7 @@ export default function SorobanSimulator() {
 
           {/* Rods Container */}
           <div className="flex gap-4 md:gap-6">
-            {rods.map((rod, r) => (
+            {activeRods.map((rod, r) => (
               <div key={r} className="relative flex flex-col items-center" style={{ width: BEAD_W }}>
                 
                 {/* Bamboo Rod (Background) */}
@@ -139,11 +208,16 @@ export default function SorobanSimulator() {
 
                 {/* HEAVEN COMPARTMENT */}
                 <div className="relative w-full" style={{ height: HEAVEN_H }}>
-                  <Bead active={rod.heaven === 1} isHeaven={true} />
+                  <Bead 
+                    active={rod.heaven === 1} 
+                    isHeaven={true} 
+                    onClick={() => handleBeadClick(r, true)}
+                    disabled={isGhostMode}
+                  />
                 </div>
 
                 {/* DIVIDER BAR */}
-                <div className="w-12 h-3 bg-gradient-to-r from-[#222] via-[#555] to-[#222] rounded-sm my-1 shadow-md z-30" />
+                <div className="w-12 h-3 bg-gradient-to-r from-[#222] via-[#555] to-[#222] rounded-sm my-1 shadow-md z-30 relative" />
 
                 {/* EARTH COMPARTMENT */}
                 <div className="relative w-full" style={{ height: EARTH_H }}>
@@ -154,47 +228,50 @@ export default function SorobanSimulator() {
                       active={b < rod.earth}
                       activeCount={rod.earth}
                       isHeaven={false}
+                      onClick={() => handleBeadClick(r, false, b)}
+                      disabled={isGhostMode}
                     />
                   ))}
                 </div>
 
-                {/* BOTTOM LABEL & VALUE */}
-                <div className="absolute -bottom-8 flex flex-col items-center gap-1">
-                  <div className="text-[10px] text-white/30 tracking-widest">{LABELS[r]}</div>
-                  <motion.div 
-                    className={`text-sm font-bold ${rod.isActive ? 'text-[#00F5FF]' : 'text-gray-700'}`}
-                    style={{ fontFamily: "var(--font-mono)" }}
-                  >
-                    {rod.digit}
-                  </motion.div>
-                </div>
+                {/* BOTTOM LABEL */}
+                <div className="absolute -bottom-6 text-[10px] text-white/30 tracking-widest">{LABELS[r]}</div>
               </div>
             ))}
           </div>
         </div>
       </div>
 
-      {/* GHOST MODE INPUT */}
-      <div className="mt-8 relative max-w-md w-full">
-        <div className="absolute inset-0 bg-[#00F5FF]/10 blur-xl rounded-full" />
-        <div className="relative flex items-center bg-[#090909]/80 backdrop-blur-md border border-[#00F5FF]/30 rounded-2xl overflow-hidden shadow-[0_0_30px_rgba(0,245,255,0.1)] p-2">
-          <div className="pl-4 pr-3 text-[#00F5FF]/70">
-            <Calculator className="w-5 h-5" />
-          </div>
-          <input
-            type="text"
-            value={inputValue}
-            onChange={(e) => setInputValue(e.target.value)}
-            placeholder="Digite um número..."
-            maxLength={13}
-            className="flex-1 bg-transparent border-none text-white text-xl md:text-2xl font-bold placeholder:text-white/20 focus:outline-none focus:ring-0 py-3"
-            style={{ fontFamily: "var(--font-mono)", letterSpacing: "2px" }}
-          />
-        </div>
-        <p className="text-center text-xs text-white/40 mt-4 font-mono tracking-widest uppercase">
-          As hastes respondem automaticamente à entrada
-        </p>
-      </div>
+      {/* ── GHOST MODE INPUT AREA ── */}
+      <AnimatePresence>
+        {isGhostMode && (
+          <motion.div 
+            initial={{ opacity: 0, y: -20, height: 0 }}
+            animate={{ opacity: 1, y: 0, height: "auto" }}
+            exit={{ opacity: 0, y: -20, height: 0 }}
+            className="mt-6 relative max-w-md w-full"
+          >
+            <div className="absolute inset-0 bg-[#00F5FF]/10 blur-xl rounded-full" />
+            <div className="relative flex items-center bg-[#090909]/80 backdrop-blur-md border border-[#00F5FF]/30 rounded-2xl overflow-hidden shadow-[0_0_30px_rgba(0,245,255,0.1)] p-2">
+              <div className="pl-4 pr-3 text-[#00F5FF]/70">
+                <Calculator className="w-5 h-5" />
+              </div>
+              <input
+                type="text"
+                value={inputValue}
+                onChange={(e) => setInputValue(e.target.value)}
+                placeholder="Digite um número..."
+                maxLength={13}
+                className="flex-1 bg-transparent border-none text-white text-xl md:text-2xl font-bold placeholder:text-white/20 focus:outline-none focus:ring-0 py-3"
+                style={{ fontFamily: "var(--font-mono)", letterSpacing: "2px" }}
+              />
+            </div>
+            <p className="text-center text-[10px] sm:text-xs text-[#00F5FF]/50 mt-4 font-mono tracking-widest uppercase">
+              As hastes estão bloqueadas. O Modo Fantasma controla o ábaco.
+            </p>
+          </motion.div>
+        )}
+      </AnimatePresence>
       
     </div>
   );

@@ -34,34 +34,42 @@ export default function Footer() {
       />
 
       <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-8 md:gap-4">
-        {/* Left — Branding */}
-        <div className="flex flex-col items-center md:items-start gap-2">
-          <div className="flex items-center gap-2 mb-1">
-            <Terminal className="w-4 h-4 text-[#00F5FF]/50" strokeWidth={1.5} />
+        <div className="flex flex-col items-center md:items-start gap-4">
+          <div className="flex items-center gap-2">
+            <Terminal className="w-5 h-5 text-[#00F5FF]/60" strokeWidth={1.5} />
             <p
-              className="text-[11px] sm:text-xs tracking-[3px] uppercase font-bold"
-              style={{ color: "rgba(255,255,255,0.5)" }}
+              className="text-xs sm:text-sm tracking-[3px] uppercase font-bold text-white/70"
             >
               Exposição Virtual Interativa
             </p>
           </div>
-          <p
-            className="text-[10px] tracking-[1px] uppercase"
-            style={{ color: "rgba(0,245,255,0.3)" }}
-          >
-            ICMC USP São Carlos · {year}
-          </p>
+          
+          <div className="space-y-1.5 max-w-xl">
+            <p className="text-[10px] sm:text-xs tracking-[1px] text-white/50 uppercase">
+              Desenvolvido como atividade de extensão acadêmica.
+            </p>
+            <p className="text-[10px] sm:text-xs tracking-[1px] text-[#00F5FF]/70 uppercase font-bold">
+              Projeto suportado pelo acervo e pesquisa do Museu de Computação Professor Odelar Leite Linhares - ICMC USP São Carlos.
+            </p>
+          </div>
         </div>
 
-        {/* Center — Decoration */}
-        <div className="hidden md:flex items-center justify-center flex-1">
-           <div className="w-16 h-px bg-gradient-to-r from-transparent via-white/10 to-transparent" />
+        {/* Center — Members */}
+        <div className="flex flex-col items-center md:items-start flex-1 md:pl-10">
+          <p className="text-[10px] tracking-[2px] uppercase text-white/30 mb-2 border-b border-white/10 pb-1 w-full text-center md:text-left">
+            Membros do Grupo
+          </p>
+          <div className="flex flex-col gap-1 text-[10px] sm:text-[11px] text-white/50 tracking-[1px] uppercase text-center md:text-left">
+            <span>[Nome 1]</span>
+            <span>[Nome 2]</span>
+            <span>[Nome 3]</span>
+          </div>
         </div>
 
         {/* Right — Links */}
-        <div className="flex flex-col sm:flex-row items-center gap-6">
-          <p className="text-[10px] tracking-[1px] text-white/20 uppercase">
-            Grupo Ábaco
+        <div className="flex flex-col sm:flex-row items-center gap-6 mt-6 md:mt-0">
+          <p className="text-[10px] tracking-[1px] text-[#00F5FF]/30 uppercase">
+            {year}
           </p>
           <a
             href="https://github.com/Fabinxz/timeline-dantives"
