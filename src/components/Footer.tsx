@@ -46,7 +46,7 @@ export default function Footer() {
           
           <div className="space-y-1.5 max-w-xl">
             <p className="text-[10px] sm:text-xs tracking-[1px] text-white/50 uppercase">
-              Desenvolvido como atividade de extensão acadêmica.
+              Desenvolvido como trabalho acadêmico para a disciplina de Evolução Histórica da Computação e Aplicações.
             </p>
             <p className="text-[10px] sm:text-xs tracking-[1px] text-[#00F5FF]/70 uppercase font-bold">
               Projeto suportado pelo acervo e pesquisa do Museu de Computação Professor Odelar Leite Linhares - ICMC USP São Carlos.
@@ -60,32 +60,18 @@ export default function Footer() {
             Membros do Grupo
           </p>
           <div className="flex flex-col gap-1 text-[10px] sm:text-[11px] text-white/50 tracking-[1px] uppercase text-center md:text-left">
-            <span>[Nome 1]</span>
-            <span>[Nome 2]</span>
-            <span>[Nome 3]</span>
+            <span>Elisa Chen Huang</span>
+            <span>Fábio Machado da Silva</span>
+            <span>Sabrina Ayumi Cardoso</span>
+            <span>Victor Domingues Paccini</span>
           </div>
         </div>
 
-        {/* Right — Links */}
+        {/* Right — Version */}
         <div className="flex flex-col sm:flex-row items-center gap-6 mt-6 md:mt-0">
           <p className="text-[10px] tracking-[1px] text-[#00F5FF]/30 uppercase">
             {year}
           </p>
-          <a
-            href="https://github.com/Fabinxz/timeline-dantives"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="
-              flex items-center gap-1.5
-              text-[10px] sm:text-[11px] tracking-[2px] uppercase
-              transition-colors duration-300
-              hover:text-[#00F5FF]
-            "
-            style={{ color: "rgba(255,255,255,0.4)" }}
-          >
-            <ExternalLink className="w-3.5 h-3.5" strokeWidth={1.5} />
-            Código Fonte
-          </a>
           <span
             className="text-[10px] px-2 py-1 rounded bg-white/5 border border-white/5"
             style={{ color: "rgba(255,255,255,0.3)" }}

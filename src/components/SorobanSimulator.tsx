@@ -8,11 +8,11 @@ import { Ghost, Hand, Calculator } from "lucide-react";
    CONSTANTS & CONFIG
    ═══════════════════════════════════════════════════ */
 const NUM_RODS = 13;
-const BEAD_W = 34;
-const BEAD_H = 14;
-const BEAD_GAP = 2;
-const HEAVEN_H = 46;
-const EARTH_H = 90;
+const BEAD_W = 46;
+const BEAD_H = 18;
+const BEAD_GAP = 3;
+const HEAVEN_H = 60;
+const EARTH_H = 120;
 
 const LABELS = [
   "T", "B", "M", "c", "d", "u",
@@ -172,18 +172,18 @@ export default function SorobanSimulator() {
         </div>
 
         {/* LED Display */}
-        <div className="flex items-center gap-4 bg-black px-6 py-2 rounded border border-[#00F5FF]/20 shadow-[inset_0_0_20px_rgba(0,0,0,1)] relative overflow-hidden group">
+        <div className="flex items-center gap-4 bg-black px-6 py-3 rounded border border-[#00F5FF]/20 shadow-[inset_0_0_20px_rgba(0,0,0,1)] relative overflow-hidden group">
           <div className="absolute inset-0 bg-[#00F5FF]/5 opacity-0 group-hover:opacity-100 transition-opacity" />
-          <span className="text-[#00F5FF]/40 font-mono text-xl md:text-2xl tracking-[4px] md:tracking-[8px] pointer-events-none">
+          <span className="text-[#00F5FF]/40 font-mono text-2xl md:text-3xl tracking-[4px] md:tracking-[8px] pointer-events-none">
             [
           </span>
           <span 
-            className="text-[#00F5FF] font-mono text-2xl md:text-4xl font-bold tracking-[6px] md:tracking-[12px] drop-shadow-[0_0_12px_rgba(0,245,255,0.8)]"
+            className="text-[#00F5FF] font-mono text-3xl md:text-5xl font-bold tracking-[6px] md:tracking-[12px] drop-shadow-[0_0_12px_rgba(0,245,255,0.8)]"
             style={{ textShadow: "0 0 10px rgba(0,245,255,0.6), 0 0 20px rgba(0,245,255,0.4)" }}
           >
             {displayValue}
           </span>
-          <span className="text-[#00F5FF]/40 font-mono text-xl md:text-2xl tracking-[4px] md:tracking-[8px] pointer-events-none">
+          <span className="text-[#00F5FF]/40 font-mono text-2xl md:text-3xl tracking-[4px] md:tracking-[8px] pointer-events-none">
             ]
           </span>
         </div>
@@ -217,7 +217,7 @@ export default function SorobanSimulator() {
                 </div>
 
                 {/* DIVIDER BAR */}
-                <div className="w-12 h-3 bg-gradient-to-r from-[#222] via-[#555] to-[#222] rounded-sm my-1 shadow-md z-30 relative" />
+                <div className="w-14 h-4 bg-gradient-to-r from-[#222] via-[#555] to-[#222] rounded-sm my-1 shadow-md z-30 relative" />
 
                 {/* EARTH COMPARTMENT */}
                 <div className="relative w-full" style={{ height: EARTH_H }}>
@@ -235,7 +235,7 @@ export default function SorobanSimulator() {
                 </div>
 
                 {/* BOTTOM LABEL */}
-                <div className="absolute -bottom-6 text-[10px] text-white/30 tracking-widest">{LABELS[r]}</div>
+                <div className="absolute -bottom-7 text-[12px] text-white/30 tracking-widest">{LABELS[r]}</div>
               </div>
             ))}
           </div>
