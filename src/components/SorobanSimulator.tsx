@@ -14,6 +14,8 @@ const BEAD_GAP = 4;
 const HEAVEN_H = 80;
 const EARTH_H = 160;
 
+const pause = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+
 const LABELS = [
   "T", "B", "M", "c", "d", "u",
   "C", "D", "U",
@@ -94,6 +96,11 @@ export default function SorobanSimulator() {
   const [inputValue, setInputValue] = useState("");
   const [scale, setScale] = useState(1);
   const containerRef = useRef<HTMLDivElement>(null);
+  
+  // Tutor Mode State
+  const [tutorMessage, setTutorMessage] = useState<string>("Aguardando equação...");
+  const [displayedGhostValue, setDisplayedGhostValue] = useState<string>("0");
+  const sequenceRef = useRef(0);
 
   // Responsive scale hook to fit the massive soroban perfectly into ANY viewport
   useEffect(() => {
@@ -111,32 +118,89 @@ export default function SorobanSimulator() {
     return () => window.removeEventListener("resize", updateScale);
   }, []);
 
+  // Async Animation Engine for Tutor Mode
+  useEffect(() => {
+    if (!isGhostMode) return;
+    
+    const currentSeq = ++sequenceRef.current;
+    
+    const timeoutId = setTimeout(async () => {
+      const expr = inputValue.trim();
+      if (!expr) {
+        setDisplayedGhostValue("0");
+        setTutorMessage("> Aguardando equação...");
+        return;
+      }
+
+      setTutorMessage("> Analisando equação...");
+      
+      try {
+        const sanitized = expr.replace(/[^0-9+\-*/().]/g, "");
+        const tokens = sanitized.match(/(\d+|\+|-|\*|\/)/g);
+        
+        if (!tokens || tokens.length === 0) {
+          throw new Error("Invalid");
+        }
+
+        let currentValue = parseInt(tokens[0], 10);
+        if (isNaN(currentValue)) throw new Error("Invalid");
+        
+        setDisplayedGhostValue(currentValue.toString());
+        setTutorMessage(`> Passo 1: Registrando valor inicial (${currentValue})...`);
+        await pause(800);
+        if (sequenceRef.current !== currentSeq) return;
+
+        for (let i = 1; i < tokens.length - 1; i += 2) {
+          const op = tokens[i];
+          const numStr = tokens[i+1];
+          if (!numStr) break;
+          const numVal = parseInt(numStr, 10);
+          if (isNaN(numVal)) break;
+
+          if (op === "+" || op === "-") {
+            const digits = numStr.split("");
+            for (let j = 0; j < digits.length; j++) {
+              const digitVal = parseInt(digits[j], 10);
+              if (digitVal === 0) continue;
+              
+              const power = digits.length - 1 - j;
+              const placeValue = digitVal * Math.pow(10, power);
+              
+              const placeName = power === 0 ? "unidade(s)" : power === 1 ? "dezena(s)" : power === 2 ? "centena(s)" : power === 3 ? "milhar(es)" : "ordem(ns)";
+              
+              currentValue = op === "+" ? currentValue + placeValue : currentValue - placeValue;
+              
+              setDisplayedGhostValue(Math.max(0, currentValue).toString());
+              setTutorMessage(`> Passo ${i + 1 + j}: ${op === "+" ? "Adicionando" : "Subtraindo"} ${digitVal} ${placeName}...`);
+              await pause(800);
+              if (sequenceRef.current !== currentSeq) return;
+            }
+          } else {
+            currentValue = op === "*" ? currentValue * numVal : Math.floor(currentValue / numVal);
+            setDisplayedGhostValue(Math.max(0, currentValue).toString());
+            setTutorMessage(`> Passo ${i + 1}: ${op === "*" ? "Multiplicando por" : "Dividindo por"} ${numVal}...`);
+            await pause(800);
+            if (sequenceRef.current !== currentSeq) return;
+          }
+        }
+        
+        setTutorMessage(`> Cálculo finalizado: ${currentValue}`);
+        
+      } catch (err) {
+        setDisplayedGhostValue(inputValue.replace(/[^0-9]/g, ""));
+        setTutorMessage("> Formato inválido. Digite uma equação (ex: 12 + 15)");
+      }
+    }, 600); // 600ms debounce
+
+    return () => clearTimeout(timeoutId);
+  }, [inputValue, isGhostMode]);
+
   const [manualRods, setManualRods] = useState(
     Array.from({ length: NUM_RODS }).map(() => ({ heaven: 0, earth: 0 }))
   );
 
-  // Derive ghost rods from input (with real-time math evaluation)
-  let calculatedStr = "0";
-  if (inputValue.trim()) {
-    try {
-      // Allow only numbers and basic math operators
-      const sanitized = inputValue.replace(/[^0-9+\-*/().]/g, "");
-      if (sanitized) {
-        // eslint-disable-next-line no-new-func
-        const result = new Function("return " + sanitized)();
-        if (Number.isFinite(result)) {
-          calculatedStr = Math.floor(Math.abs(result)).toString();
-        } else {
-          calculatedStr = inputValue.replace(/[^0-9]/g, "");
-        }
-      }
-    } catch (e) {
-      // If incomplete expression (like "2+"), fallback to just digits typed
-      calculatedStr = inputValue.replace(/[^0-9]/g, "");
-    }
-  }
-
-  const strVal = calculatedStr.slice(0, NUM_RODS);
+  // Derive ghost rods from displayed ghost value (async controlled)
+  const strVal = displayedGhostValue.slice(0, NUM_RODS);
   const ghostRods = Array.from({ length: NUM_RODS }).map((_, i) => {
     const strIndex = i - (NUM_RODS - strVal.length);
     if (strIndex >= 0 && strIndex < strVal.length) {
@@ -299,25 +363,41 @@ export default function SorobanSimulator() {
             initial={{ opacity: 0, y: -20, height: 0 }}
             animate={{ opacity: 1, y: 0, height: "auto" }}
             exit={{ opacity: 0, y: -20, height: 0 }}
-            className="mt-8 relative max-w-xl w-full"
+            className="mt-8 relative max-w-xl w-full flex flex-col gap-4"
           >
-            <div className="absolute inset-0 bg-[#00F5FF]/10 blur-xl rounded-full" />
-            <div className="relative flex items-center bg-[#090909]/80 backdrop-blur-md border border-[#00F5FF]/30 rounded-2xl overflow-hidden shadow-[0_0_30px_rgba(0,245,255,0.1)] p-3">
-              <div className="pl-4 pr-3 text-[#00F5FF]/70">
-                <Calculator className="w-5 h-5 sm:w-6 sm:h-6" />
+            {/* Input Container */}
+            <div className="relative group">
+              <div className="absolute inset-0 bg-[#00F5FF]/10 blur-xl rounded-full" />
+              <div className="relative flex items-center bg-[#090909]/80 backdrop-blur-md border border-[#00F5FF]/30 rounded-2xl overflow-hidden shadow-[0_0_30px_rgba(0,245,255,0.1)] p-3">
+                <div className="pl-4 pr-3 text-[#00F5FF]/70">
+                  <Calculator className="w-5 h-5 sm:w-6 sm:h-6" />
+                </div>
+                <input
+                  type="text"
+                  value={inputValue}
+                  onChange={(e) => setInputValue(e.target.value)}
+                  placeholder="Ex: 12 + 15"
+                  maxLength={30}
+                  className="flex-1 w-full min-w-0 bg-transparent border-none text-white text-lg sm:text-2xl md:text-3xl font-bold placeholder:text-white/20 focus:outline-none focus:ring-0 py-2 sm:py-3"
+                  style={{ fontFamily: "var(--font-mono)", letterSpacing: "2px" }}
+                />
               </div>
-              <input
-                type="text"
-                value={inputValue}
-                onChange={(e) => setInputValue(e.target.value)}
-                placeholder="Ex: 10 + 15 * 2"
-                maxLength={30}
-                className="flex-1 w-full min-w-0 bg-transparent border-none text-white text-lg sm:text-2xl md:text-3xl font-bold placeholder:text-white/20 focus:outline-none focus:ring-0 py-2 sm:py-3"
-                style={{ fontFamily: "var(--font-mono)", letterSpacing: "2px" }}
-              />
             </div>
-            <p className="text-center text-[10px] sm:text-xs text-[#00F5FF]/50 mt-4 font-mono tracking-widest uppercase">
-              As hastes estão bloqueadas. O Modo Fantasma controla o ábaco.
+
+            {/* Narrator HUD */}
+            <div className="relative flex items-center bg-[#050505]/90 backdrop-blur-md border border-[#00F5FF]/20 rounded-lg overflow-hidden p-4 shadow-[0_0_20px_rgba(0,245,255,0.05)]">
+               <span className="text-[#00F5FF]/90 font-mono text-sm tracking-wide">
+                 {tutorMessage}
+                 <motion.span 
+                   animate={{ opacity: [1, 0] }} 
+                   transition={{ repeat: Infinity, duration: 0.8 }}
+                   className="inline-block w-2 h-4 bg-[#00F5FF] ml-1 align-middle shadow-[0_0_8px_rgba(0,245,255,0.8)]"
+                 />
+               </span>
+            </div>
+
+            <p className="text-center text-[10px] sm:text-xs text-[#00F5FF]/50 font-mono tracking-widest uppercase mt-2">
+              Modo Tutor ativado. Digite a operação e aguarde a animação.
             </p>
           </motion.div>
         )}
