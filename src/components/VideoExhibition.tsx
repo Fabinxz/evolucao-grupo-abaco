@@ -18,155 +18,116 @@ interface VideoCardProps {
 }
 
 function VideoCard({ title, subtitle, description, thumbnail, icon, duration, url, youtubeId }: VideoCardProps) {
-  const [isOpen, setIsOpen] = useState(false);
-  const [mounted, setMounted] = useState(false);
   const isAvailable = !!(url || youtubeId);
-
-  useEffect(() => {
-    setMounted(true);
-    if (isOpen) {
-      document.body.style.overflow = "hidden";
-    } else {
-      document.body.style.overflow = "unset";
-    }
-    return () => { document.body.style.overflow = "unset"; };
-  }, [isOpen]);
-
-  const modalContent = (
-    <AnimatePresence>
-      {isOpen && youtubeId && (
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          className="fixed inset-0 z-[9999] flex items-center justify-center bg-[#050505]/95 backdrop-blur-2xl p-4 md:p-8"
-          onClick={() => setIsOpen(false)}
-        >
-          <motion.div
-            initial={{ scale: 0.9, opacity: 0, y: 20 }}
-            animate={{ scale: 1, opacity: 1, y: 0 }}
-            exit={{ scale: 0.9, opacity: 0, y: 20 }}
-            className="relative w-full max-w-5xl aspect-video bg-black rounded-2xl overflow-hidden border border-white/10 shadow-[0_0_100px_rgba(0,0,0,1)]"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <button 
-              onClick={() => setIsOpen(false)}
-              className="absolute top-4 right-4 z-[10000] p-2 rounded-full bg-black/60 text-white/70 hover:text-[#00F5FF] hover:bg-[#00F5FF]/10 transition-all border border-white/10 group"
-            >
-              <X className="w-6 h-6 transition-transform group-hover:rotate-90" />
-            </button>
-            
-            <iframe
-              src={`https://www.youtube.com/embed/${youtubeId}?autoplay=1&rel=0&modestbranding=1`}
-              title={title}
-              className="w-full h-full"
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-              allowFullScreen
-            />
-          </motion.div>
-        </motion.div>
-      )}
-    </AnimatePresence>
-  );
+  const finalUrl = youtubeId ? `https://youtu.be/${youtubeId}` : url;
 
   return (
-    <>
-      <motion.div
-        initial={{ opacity: 0, scale: 0.95 }}
-        whileInView={{ opacity: 1, scale: 1 }}
-        viewport={{ once: true }}
-        transition={{ duration: 0.5 }}
-        className={`group relative flex flex-col bg-[#080808]/40 border rounded-2xl overflow-hidden transition-all duration-500 shadow-2xl ${isAvailable ? 'hover:border-[#00F5FF]/30 border-white/5 cursor-pointer' : 'border-white/5 opacity-80 hover:opacity-100'}`}
-        onClick={() => isAvailable && setIsOpen(true)}
-      >
-        {/* Video Thumbnail Area */}
-        <div className="relative aspect-video overflow-hidden">
+    <motion.div
+      initial={{ opacity: 0, scale: 0.95 }}
+      whileInView={{ opacity: 1, scale: 1 }}
+      viewport={{ once: true }}
+      transition={{ duration: 0.5 }}
+      className={`group relative flex flex-col bg-[#080808]/40 border rounded-2xl overflow-hidden transition-all duration-500 shadow-2xl ${isAvailable ? 'hover:border-[#00F5FF]/30 border-white/5' : 'border-white/5 opacity-80'}`}
+    >
+      {/* Video Thumbnail Area */}
+      <div className="relative aspect-video overflow-hidden bg-black/40">
+        {thumbnail ? (
           <Image
             src={thumbnail}
             alt={title}
             fill
-            className="object-cover transition-transform duration-700 group-hover:scale-110 opacity-60 group-hover:opacity-80"
+            className="object-cover transition-transform duration-700 group-hover:scale-110 opacity-40 group-hover:opacity-60"
           />
-          
-          {/* Glassmorphism Overlay */}
-          <div className="absolute inset-0 bg-gradient-to-t from-[#050505] via-transparent to-transparent opacity-60" />
-          
-          {/* Play Button */}
-          <div className="absolute inset-0 flex items-center justify-center">
-            {isAvailable ? (
-              <div className="w-16 h-16 rounded-full bg-[#00F5FF]/10 backdrop-blur-md border border-[#00F5FF]/40 flex items-center justify-center text-[#00F5FF] shadow-[0_0_20px_rgba(0,245,255,0.3)] transition-all duration-300 group-hover:bg-[#00F5FF]/20 group-hover:shadow-[0_0_30px_rgba(0,245,255,0.5)]">
-                <Play className="w-8 h-8 fill-current" />
-              </div>
-            ) : (
-              <div className="w-16 h-16 rounded-full bg-white/5 backdrop-blur-sm border border-white/10 flex items-center justify-center text-white/20">
-                <Play className="w-8 h-8 fill-current" />
-              </div>
-            )}
-          </div>
-
-          {/* Duration Badge */}
-          {duration && (
-            <div className="absolute bottom-3 right-3 px-2 py-1 rounded bg-black/60 backdrop-blur-md border border-white/10 text-[10px] font-mono text-white/70">
-              {duration}
+        ) : (
+          <div className="absolute inset-0 bg-gradient-to-br from-[#00F5FF]/5 to-transparent opacity-20" />
+        )}
+        
+        {/* Glassmorphism Overlay */}
+        <div className="absolute inset-0 bg-gradient-to-t from-[#050505] via-transparent to-transparent opacity-60" />
+        
+        {/* Play Button */}
+        <div className="absolute inset-0 flex items-center justify-center">
+          {isAvailable ? (
+            <a 
+              href={finalUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="w-16 h-16 rounded-full bg-[#00F5FF]/10 backdrop-blur-md border border-[#00F5FF]/40 flex items-center justify-center text-[#00F5FF] shadow-[0_0_20px_rgba(0,245,255,0.3)] transition-all duration-300 hover:bg-[#00F5FF]/20 hover:shadow-[0_0_30px_rgba(0,245,255,0.5)] cursor-pointer"
+            >
+              <Play className="w-8 h-8 fill-current" />
+            </a>
+          ) : (
+            <div className="w-16 h-16 rounded-full bg-white/5 backdrop-blur-sm border border-white/10 flex items-center justify-center text-white/20">
+              <Play className="w-8 h-8 fill-current" />
             </div>
           )}
         </div>
 
-        {/* Content Area */}
-        <div className="p-6 flex flex-col flex-grow">
-          <div className="flex items-center gap-3 mb-3">
-            <div className={`p-2 rounded-lg border ${isAvailable ? 'bg-[#00F5FF]/5 border-[#00F5FF]/20 text-[#00F5FF]' : 'bg-white/5 border-white/10 text-white/40'}`}>
-              {icon}
-            </div>
-            <div>
-              <h4 className={`text-[10px] uppercase tracking-[3px] font-mono ${isAvailable ? 'text-[#00F5FF]/50' : 'text-white/30'}`}>
-                {subtitle}
-              </h4>
-              <h3 className="text-xl font-bold text-white/90">
-                {title}
-              </h3>
-            </div>
+        {/* Duration Badge */}
+        {duration && (
+          <div className="absolute bottom-3 right-3 px-2 py-1 rounded bg-black/60 backdrop-blur-md border border-white/10 text-[10px] font-mono text-white/70">
+            {duration}
           </div>
-          
-          <p className="text-sm text-white/40 leading-relaxed mb-6 flex-grow">
-            {description}
-          </p>
+        )}
+      </div>
 
-          <div className="flex items-center justify-between mt-auto pt-4 border-t border-white/5">
-            <div className="flex items-center gap-2 text-[10px] font-mono text-white/30 uppercase tracking-widest">
-              {!isAvailable && (
-                <>
-                  <Info className="w-3 h-3" />
-                  Em breve
-                </>
-              )}
-            </div>
-            
-            {isAvailable ? (
-              <div className="text-[10px] font-mono text-[#00F5FF] uppercase tracking-widest flex items-center gap-2 group/btn">
-                Assistir Agora
-                <div className="w-4 h-px bg-[#00F5FF]/30 group-hover/btn:w-8 transition-all duration-300" />
-              </div>
-            ) : (
-              <div className="text-[10px] font-mono text-white/20 uppercase tracking-widest flex items-center gap-2">
-                Aguardando Link
-                <div className="w-4 h-px bg-white/10" />
-              </div>
-            )}
+      {/* Content Area */}
+      <div className="p-6 flex flex-col flex-grow">
+        <div className="flex items-center gap-3 mb-3">
+          <div className={`p-2 rounded-lg border ${isAvailable ? 'bg-[#00F5FF]/5 border-[#00F5FF]/20 text-[#00F5FF]' : 'bg-white/5 border-white/10 text-white/40'}`}>
+            {icon}
+          </div>
+          <div>
+            <h4 className={`text-[10px] uppercase tracking-[3px] font-mono ${isAvailable ? 'text-[#00F5FF]/50' : 'text-white/30'}`}>
+              {subtitle}
+            </h4>
+            <h3 className="text-xl font-bold text-white/90">
+              {title}
+            </h3>
           </div>
         </div>
+        
+        <p className="text-sm text-white/40 leading-relaxed mb-6 flex-grow">
+          {description}
+        </p>
 
-        {/* Decorative Accents */}
-        {isAvailable && (
-          <>
-            <div className="absolute top-0 left-0 w-16 h-px bg-gradient-to-r from-[#00F5FF]/0 via-[#00F5FF]/40 to-[#00F5FF]/0 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-            <div className="absolute bottom-0 right-0 w-16 h-px bg-gradient-to-r from-[#00F5FF]/0 via-[#00F5FF]/40 to-[#00F5FF]/0 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-          </>
-        )}
-      </motion.div>
+        <div className="flex items-center justify-between mt-auto pt-4 border-t border-white/5">
+          <div className="flex items-center gap-2 text-[10px] font-mono text-white/30 uppercase tracking-widest">
+            {!isAvailable && (
+              <>
+                <Info className="w-3 h-3" />
+                Em breve
+              </>
+            )}
+          </div>
+          
+          {isAvailable ? (
+            <a
+              href={finalUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-[10px] font-mono text-[#00F5FF] uppercase tracking-widest flex items-center gap-2 group/btn"
+            >
+              Assistir no YouTube
+              <div className="w-4 h-px bg-[#00F5FF]/30 group-hover/btn:w-8 transition-all duration-300" />
+            </a>
+          ) : (
+            <div className="text-[10px] font-mono text-white/20 uppercase tracking-widest flex items-center gap-2">
+              Aguardando Link
+              <div className="w-4 h-px bg-white/10" />
+            </div>
+          )}
+        </div>
+      </div>
 
-      {mounted && createPortal(modalContent, document.body)}
-    </>
+      {/* Decorative Accents */}
+      {isAvailable && (
+        <>
+          <div className="absolute top-0 left-0 w-16 h-px bg-gradient-to-r from-[#00F5FF]/0 via-[#00F5FF]/40 to-[#00F5FF]/0 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+          <div className="absolute bottom-0 right-0 w-16 h-px bg-gradient-to-r from-[#00F5FF]/0 via-[#00F5FF]/40 to-[#00F5FF]/0 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+        </>
+      )}
+    </motion.div>
   );
 }
 
@@ -185,7 +146,7 @@ export default function VideoExhibition() {
       title: "Do Ábaco à Ciência da Computação",
       subtitle: "HISTÓRIA DA COMPUTAÇÃO",
       description: "Qual a verdadeira relação entre os primeiros instrumentos de cálculo da humanidade e os computadores atuais? Este minidocumentário explora a linha do tempo geral do ábaco e discute como a necessidade humana de abstrair e automatizar o processamento de dados deu origem à computação discreta.",
-      thumbnail: "/video_history_thumb_1777654277759.png",
+      thumbnail: "", // Removed thumbnail as requested
       icon: <BookOpen className="w-5 h-5" />,
       duration: "12:20"
     }
