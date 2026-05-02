@@ -1,9 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Play, BookOpen, GraduationCap, Info, X } from "lucide-react";
 import Image from "next/image";
+import { createPortal } from "react-dom";
 
 interface VideoCardProps {
   title: string;
@@ -18,7 +19,55 @@ interface VideoCardProps {
 
 function VideoCard({ title, subtitle, description, thumbnail, icon, duration, url, youtubeId }: VideoCardProps) {
   const [isOpen, setIsOpen] = useState(false);
+  const [mounted, setMounted] = useState(false);
   const isAvailable = !!(url || youtubeId);
+
+  useEffect(() => {
+    setMounted(true);
+    if (isOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "unset";
+    }
+    return () => { document.body.style.overflow = "unset"; };
+  }, [isOpen]);
+
+  const modalContent = (
+    <AnimatePresence>
+      {isOpen && youtubeId && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          className="fixed inset-0 z-[9999] flex items-center justify-center bg-[#050505]/95 backdrop-blur-2xl p-4 md:p-8"
+          onClick={() => setIsOpen(false)}
+        >
+          <motion.div
+            initial={{ scale: 0.9, opacity: 0, y: 20 }}
+            animate={{ scale: 1, opacity: 1, y: 0 }}
+            exit={{ scale: 0.9, opacity: 0, y: 20 }}
+            className="relative w-full max-w-5xl aspect-video bg-black rounded-2xl overflow-hidden border border-white/10 shadow-[0_0_100px_rgba(0,0,0,1)]"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <button 
+              onClick={() => setIsOpen(false)}
+              className="absolute top-4 right-4 z-[10000] p-2 rounded-full bg-black/60 text-white/70 hover:text-[#00F5FF] hover:bg-[#00F5FF]/10 transition-all border border-white/10 group"
+            >
+              <X className="w-6 h-6 transition-transform group-hover:rotate-90" />
+            </button>
+            
+            <iframe
+              src={`https://www.youtube.com/embed/${youtubeId}?autoplay=1&rel=0&modestbranding=1`}
+              title={title}
+              className="w-full h-full"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allowFullScreen
+            />
+          </motion.div>
+        </motion.div>
+      )}
+    </AnimatePresence>
+  );
 
   return (
     <>
@@ -27,7 +76,8 @@ function VideoCard({ title, subtitle, description, thumbnail, icon, duration, ur
         whileInView={{ opacity: 1, scale: 1 }}
         viewport={{ once: true }}
         transition={{ duration: 0.5 }}
-        className={`group relative flex flex-col bg-[#080808]/40 border rounded-2xl overflow-hidden transition-all duration-500 shadow-2xl ${isAvailable ? 'hover:border-[#00F5FF]/30 border-white/5' : 'border-white/5 opacity-80 hover:opacity-100'}`}
+        className={`group relative flex flex-col bg-[#080808]/40 border rounded-2xl overflow-hidden transition-all duration-500 shadow-2xl ${isAvailable ? 'hover:border-[#00F5FF]/30 border-white/5 cursor-pointer' : 'border-white/5 opacity-80 hover:opacity-100'}`}
+        onClick={() => isAvailable && setIsOpen(true)}
       >
         {/* Video Thumbnail Area */}
         <div className="relative aspect-video overflow-hidden">
@@ -44,12 +94,9 @@ function VideoCard({ title, subtitle, description, thumbnail, icon, duration, ur
           {/* Play Button */}
           <div className="absolute inset-0 flex items-center justify-center">
             {isAvailable ? (
-              <button 
-                onClick={() => setIsOpen(true)}
-                className="w-16 h-16 rounded-full bg-[#00F5FF]/10 backdrop-blur-md border border-[#00F5FF]/40 flex items-center justify-center text-[#00F5FF] shadow-[0_0_20px_rgba(0,245,255,0.3)] transition-all duration-300 hover:bg-[#00F5FF]/20 hover:shadow-[0_0_30px_rgba(0,245,255,0.5)] cursor-pointer"
-              >
+              <div className="w-16 h-16 rounded-full bg-[#00F5FF]/10 backdrop-blur-md border border-[#00F5FF]/40 flex items-center justify-center text-[#00F5FF] shadow-[0_0_20px_rgba(0,245,255,0.3)] transition-all duration-300 group-hover:bg-[#00F5FF]/20 group-hover:shadow-[0_0_30px_rgba(0,245,255,0.5)]">
                 <Play className="w-8 h-8 fill-current" />
-              </button>
+              </div>
             ) : (
               <div className="w-16 h-16 rounded-full bg-white/5 backdrop-blur-sm border border-white/10 flex items-center justify-center text-white/20">
                 <Play className="w-8 h-8 fill-current" />
@@ -96,13 +143,10 @@ function VideoCard({ title, subtitle, description, thumbnail, icon, duration, ur
             </div>
             
             {isAvailable ? (
-              <button
-                onClick={() => setIsOpen(true)}
-                className="text-[10px] font-mono text-[#00F5FF] uppercase tracking-widest flex items-center gap-2 group/btn"
-              >
+              <div className="text-[10px] font-mono text-[#00F5FF] uppercase tracking-widest flex items-center gap-2 group/btn">
                 Assistir Agora
                 <div className="w-4 h-px bg-[#00F5FF]/30 group-hover/btn:w-8 transition-all duration-300" />
-              </button>
+              </div>
             ) : (
               <div className="text-[10px] font-mono text-white/20 uppercase tracking-widest flex items-center gap-2">
                 Aguardando Link
@@ -121,39 +165,7 @@ function VideoCard({ title, subtitle, description, thumbnail, icon, duration, ur
         )}
       </motion.div>
 
-      {/* Video Modal Overlay */}
-      <AnimatePresence>
-        {isOpen && youtubeId && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[100] flex items-center justify-center bg-black/90 backdrop-blur-xl p-4 md:p-8"
-          >
-            <motion.div
-              initial={{ scale: 0.9, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.9, opacity: 0 }}
-              className="relative w-full max-w-5xl aspect-video bg-black rounded-2xl overflow-hidden border border-white/10 shadow-[0_0_50px_rgba(0,0,0,1)]"
-            >
-              <button 
-                onClick={() => setIsOpen(false)}
-                className="absolute top-4 right-4 z-[110] p-2 rounded-full bg-black/50 text-white/70 hover:text-white hover:bg-[#00F5FF]/20 transition-all border border-white/10"
-              >
-                <X className="w-6 h-6" />
-              </button>
-              
-              <iframe
-                src={`https://www.youtube.com/embed/${youtubeId}?autoplay=1`}
-                title={title}
-                className="w-full h-full"
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                allowFullScreen
-              />
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+      {mounted && createPortal(modalContent, document.body)}
     </>
   );
 }
